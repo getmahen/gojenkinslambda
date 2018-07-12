@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sam-app
+
+  Sample SAM Template for sam-app
+
+  '
+Globals:
+  Function:
+    Timeout: 5
+Outputs:
+  CheckIpAddressAPI:
+    Description: API Gateway endpoint URL for Prod environment for First Function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/checkipaddress/
+  CheckIpAddressFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CheckIpAddressFunction
+      - Arn
+Resources:
+  CheckIpAddressFunction:
+    Properties:
+      CodeUri: s3://samgolambda/d1b2d14a95ac78974972eb91a33fda36
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        CatchAll:
+          Properties:
+            Method: GET
+            Path: /checkipaddress
+          Type: Api
+      Handler: checkipaddress
+      Role: arn:aws:iam::838040939330:role/LambdaBasicExecutionRole
+      Runtime: go1.x
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
