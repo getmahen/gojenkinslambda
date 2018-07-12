@@ -1,5 +1,8 @@
-.PHONY: deps clean build
+.PHONY: install deps clean build
 
+install:
+	go get github.com/golang/dep/cmd/dep
+	
 deps:
 	go get -u -v ./...
 
