@@ -7,4 +7,4 @@ clean:
 	rm -rf ./checkipaddress/checkipaddress
 	
 build: clean
-	GOOS=linux GOARCH=amd64 go build -o checkipaddress/checkipaddress ./checkipaddress
+	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
