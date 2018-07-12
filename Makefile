@@ -26,7 +26,7 @@ clean:
 build: clean
 	@echo "Installing dependencies..";
 	go get github.com/golang/dep/cmd/dep
-	go get -u -v ./...
+	dep ensure -v
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
 	cd checkipaddress && zip checkipaddress.zip checkipaddress
