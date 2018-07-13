@@ -33,10 +33,10 @@ clean:
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
-	go get -u github.com/golang/dep/cmd/dep
-	#go get -u -v ./...
-	dep ensure -v
-	#@go get -u -v ./...
+	#go get -u github.com/golang/dep/cmd/dep
+	#cd $(HOME)/go go get -u -v ./...
+
+	#dep ensure -v
 
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
