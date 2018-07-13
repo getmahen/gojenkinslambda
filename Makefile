@@ -41,8 +41,9 @@ build: clean
 
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
+
+.PHONY: package
+package: build
 	cd checkipaddress && zip checkipaddress.zip checkipaddress
-
-
 
  
