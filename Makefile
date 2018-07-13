@@ -17,6 +17,13 @@
 
 
 #NEW
+BIN_DIR := $(GOPATH)/bin
+DEP := $(BIN_DIR)/dep
+
+$(DEP):
+	go get -u github.com/golang/dep/cmd/dep
+	dep --install &> /dev/null
+
 .PHONY: clean
 clean:
 	@go clean
@@ -25,7 +32,9 @@ clean:
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
-	@go get -u -v ./...
+	$(DEP) ensure -v
+	#@go get -u -v ./...
+
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
 	cd checkipaddress && zip checkipaddress.zip checkipaddress
