@@ -18,21 +18,21 @@
 
 #NEW
 BIN_DIR := $(GOPATH)/bin
-DEP := $(BIN_DIR)/dep
+DEP := $(BIN_DIR)
 
 $(DEP):
 	go get -u github.com/golang/dep/cmd/dep
 	dep --install &> /dev/null
 
 .PHONY: clean
-clean:
+clean: $(DEP)
 	@go clean
 	rm -rf ./checkipaddress/checkipaddress && rm -rf ./checkipaddress/checkipaddress.zip
 
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
-	$(DEP) ensure -v
+	dep ensure -v
 	#@go get -u -v ./...
 
 	@echo "building..."
