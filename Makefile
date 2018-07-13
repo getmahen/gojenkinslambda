@@ -33,6 +33,7 @@ clean:
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
+	go get -u github.com/golang/dep/cmd/dep
 	#go get -u -v ./...
 	dep ensure -v
 	#@go get -u -v ./...
