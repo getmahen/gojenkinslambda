@@ -21,6 +21,7 @@ BIN_DIR := $(GOPATH)/bin
 DEP := $(BIN_DIR)
 
 $(DEP):
+	@echo "Getting DEP"
 	go get -u github.com/golang/dep/cmd/dep
 	dep --install &> /dev/null
 
@@ -32,7 +33,8 @@ clean: $(DEP)
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
-	dep ensure -v
+	go get -u -v ./...
+	#dep ensure -v
 	#@go get -u -v ./...
 
 	@echo "building..."
