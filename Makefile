@@ -37,12 +37,7 @@ test:
 
 .PHONY: build
 build: clean
-	@echo "Installing dependencies.."
-	#go get -u github.com/golang/dep/cmd/dep
-	git checkout master && go get -u -v ./...
-	#cd $(HOME)/go go get -u -v ./...
-
-	#dep ensure -v
+	#git checkout master && go get -u -v ./...
 
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
