@@ -47,8 +47,12 @@ node {
             
             stage 'Build'
             sh 'make build'
-            sh 'ls ./checkipaddress -la'
             
+            stage 'Zip and package'
+            sh 'Zipping the binary..'
+            sh 'zip checkipaddress.zip checkipaddress'
+            sh 'ls -latr ./checkipaddress'
+
             stage 'Deploy'
             // Do nothing.
         }

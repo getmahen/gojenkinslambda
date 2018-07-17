@@ -37,8 +37,6 @@ test:
 
 .PHONY: build
 build: clean
-	#git checkout master && go get -u -v ./...
-
 	@echo "building..."
 	GOOS=linux GOARCH=amd64 go build -v -o checkipaddress/checkipaddress ./checkipaddress
 
