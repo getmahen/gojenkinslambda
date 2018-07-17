@@ -35,6 +35,12 @@ node {
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
+            sh 'printenv'
+            sh "BUILD_ID== ${env.BUILD_ID}"
+            sh "JENKINS_URL== ${env.JENKINS_URL}"
+            sh "JENKINS_HOME== ${env.JENKINS_HOME}"
+            sh "JOB_NAME== ${env.JOB_NAME}"
+
             stage 'preTest'
             sh 'go version'
             sh 'go get -u github.com/golang/dep/...'
