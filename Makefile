@@ -30,6 +30,11 @@ clean:
 	@go clean
 	rm -rf ./checkipaddress/checkipaddress && rm -rf ./checkipaddress/checkipaddress.zip
 
+.PHONY: test
+test:
+	@echo "Running unit tests.."
+	go test ./... -race -cover -v 2>&1
+
 .PHONY: build
 build: clean
 	@echo "Installing dependencies.."
