@@ -45,6 +45,7 @@ node {
             
             stage 'Build'
             sh 'make build'
+            sh 'ls -la'
             
             stage 'Deploy'
             // Do nothing.
