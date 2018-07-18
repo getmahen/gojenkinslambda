@@ -44,6 +44,7 @@ node {
             echo AWS_ACCESS_KEY_ID == ${TEST}
             echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
             '''
+            s3Upload(file:'main.go', bucket:'testjenkinsartifacts', path:'main.go')
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
@@ -65,7 +66,8 @@ node {
             '''
             sh 'ls -latr ./checkipaddress'
 
-            stage 'Upload package'
+            stage 'Upload package to AWS S3 bucket'
+            //s3Upload(file:'file.txt', bucket:'testjenkinsartifacts', path:'path/to/target/file.txt')
             // Do nothing.
         }
     }
