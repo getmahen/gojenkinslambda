@@ -40,13 +40,13 @@ node {
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
             sh 'printenv'
-            sh '''
-            echo AWS_ACCESS_KEY_ID == ${TEST}
-            echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
-            ls -la
-            '''
+            // sh '''
+            // echo AWS_ACCESS_KEY_ID == ${TEST}
+            // echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
+            // ls -la
+            // '''
             //s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
-            sh 'aws ec2 describe-instances'
+            sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ec2 describe-instances'
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
