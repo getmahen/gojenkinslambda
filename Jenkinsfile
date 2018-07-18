@@ -24,7 +24,7 @@
 // }
 
 
-
+//THIS WORKED
 node {
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
@@ -36,6 +36,10 @@ node {
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
             sh 'printenv'
+
+            sh '''
+            zip zipFile: 'checkipaddress.zip', dir: ''
+            '''
 
             stage 'Dependencies'
             sh 'go version'
@@ -49,11 +53,9 @@ node {
             sh 'make build'
             
             stage 'Zip and package'
-            //sh 'zip zipFile: checkipaddress.zip checkipaddress'
             
-            //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             sh '''
-            cd checkipaddress && ls -latr
+            zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             '''
             //sh 'ls -latr ./checkipaddress'
 
