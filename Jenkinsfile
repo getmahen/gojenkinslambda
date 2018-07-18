@@ -67,13 +67,17 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      git url: 'https://github.com/getmahen/gojenkinslambda.git'
-      sh 'printenv'
+      steps {
+        git url: 'https://github.com/getmahen/gojenkinslambda.git'
+        sh 'printenv'
+      }
     }
     stage('Zip') {
-      sh '''
-      zip zipFile: 'checkipaddress.zip', dir: ''
-      '''
+      steps {
+        sh '''
+        zip zipFile: 'checkipaddress.zip', dir: ''
+        '''
+      }
     }
   }
 }
