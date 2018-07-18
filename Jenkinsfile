@@ -28,18 +28,18 @@
 node {
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
-        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin", "AWS_ACCESS_KEY_ID=${TEST}"]) {
             env.PATH="${GOPATH}/bin:$PATH"
 
-            environment {
-              AWS_ACCESS_KEY_ID     = credentials('TEST')
-            }
+            // environment {
+            //   AWS_ACCESS_KEY_ID     = credentials('TEST')
+            // }
             
             stage 'Checkout'
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
-            sh 'echo AWS_ACCESS_KEY_ID == '$AWS_ACCESS_KEY_ID
+            sh 'echo AWS_ACCESS_KEY_ID == '${AWS_ACCESS_KEY_ID}
             sh 'printenv'
 
             stage 'Dependencies'
