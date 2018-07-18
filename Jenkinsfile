@@ -45,7 +45,8 @@ node {
             echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
             ls -la
             '''
-            s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
+            //s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
+            sh 'aws ec2 describe-instances'
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
