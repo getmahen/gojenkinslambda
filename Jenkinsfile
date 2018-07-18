@@ -42,8 +42,13 @@ node {
             // ls -la
             // '''
             //s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
-            sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ec2 describe-instances'
-
+            sh '''
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} 
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} 
+            export AWS_DEFAULT_REGION=us-east-2 
+            aws ec2 describe-instances
+            '''
+            
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
             sh 'go version'
