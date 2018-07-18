@@ -45,7 +45,7 @@ node {
             echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
             ls -la
             '''
-            s3Upload(file:'main.go', bucket:'testjenkinsartifacts', path:'main.go')
+            s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
