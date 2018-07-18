@@ -37,7 +37,7 @@ node {
         
             sh 'printenv'
 
-            stage 'preTest'
+            stage 'Dependencies'
             sh 'go version'
             sh 'go get -u github.com/golang/dep/...'
             sh 'dep ensure -v'
@@ -50,7 +50,10 @@ node {
             
             stage 'Zip and package'
             sh 'Zipping the binary..'
-            sh 'zip checkipaddress.zip checkipaddress'
+            //sh 'zip zipFile: checkipaddress.zip checkipaddress'
+            sh '''
+            zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress/checkipaddress'
+            '''
             sh 'ls -latr ./checkipaddress'
 
             stage 'Deploy'
