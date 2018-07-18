@@ -40,7 +40,7 @@ node {
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
             sh 'printenv'
-            sh 'echo AWS_ACCESS_KEY_ID == ' + ${env.AWS_ACCESS_KEY_ID}
+            sh 'echo AWS_ACCESS_KEY_ID == ' ${env.AWS_ACCESS_KEY_ID}
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
