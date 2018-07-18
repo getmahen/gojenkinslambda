@@ -51,10 +51,12 @@ node {
             stage 'Zip and package'
             //sh 'zip zipFile: checkipaddress.zip checkipaddress'
             
+            //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             sh '''
-            zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
+            cd ./checkipaddress
+            ls -latr
             '''
-            sh 'ls -latr ./checkipaddress'
+            //sh 'ls -latr ./checkipaddress'
 
             stage 'Deploy'
             // Do nothing.
