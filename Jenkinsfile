@@ -39,7 +39,7 @@ node {
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
-            sh 'echo AWS_ACCESS_KEY_ID == '${AWS_ACCESS_KEY_ID}
+            sh 'echo AWS_ACCESS_KEY_ID == ' env.TEST
             sh 'printenv'
 
             stage 'Dependencies'
