@@ -76,7 +76,7 @@ pipeline {
     stage('Zip') {
       steps {
         sh '''
-        zip zipFile: 'checkipaddress.zip', dir: ''
+        zip checkipaddress.zip .
         '''
       }
     }
