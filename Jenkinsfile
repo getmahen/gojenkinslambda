@@ -53,8 +53,7 @@ node {
             
             //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             sh '''
-            cd ./checkipaddress
-            ls -latr
+            cd checkipaddress && ls -latr
             '''
             //sh 'ls -latr ./checkipaddress'
 
