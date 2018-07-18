@@ -42,13 +42,7 @@ node {
             // ls -la
             // '''
             //s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
-            sh '''
-            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} 
-            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} 
-            export AWS_DEFAULT_REGION=us-east-2 
-            aws ec2 describe-instances
-            '''
-            
+
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
             sh 'go version'
@@ -70,7 +64,12 @@ node {
             sh 'ls -latr ./checkipaddress'
 
             stage 'Upload package to AWS S3 bucket'
-            //s3Upload(file:'file.txt', bucket:'testjenkinsartifacts', path:'path/to/target/file.txt')
+            sh '''
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} 
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} 
+            export AWS_DEFAULT_REGION=us-east-2 
+            aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip
+            '''
             // Do nothing.
         }
     }

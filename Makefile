@@ -44,4 +44,10 @@ build: clean
 package: build
 	cd checkipaddress && zip -v checkipaddress.zip checkipaddress
 
+.PHONY: upload
+upload: build
+	@echo "$(TS_COLOR)$(shell date "+%Y/%m/%d %H:%M:%S")$(NO_COLOR)$(OK_COLOR)==> Deploying Zip to s3$(NO_COLOR)"
+	cd checkipaddress
+	aws s3 cp checkipaddress.zip s3://credo-dev-lambdas/checkipaddress.zip --metadata GitHash=`git rev-parse HEAD`
+
  
