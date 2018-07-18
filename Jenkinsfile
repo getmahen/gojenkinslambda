@@ -70,6 +70,7 @@ pipeline {
       steps {
         git url: 'https://github.com/getmahen/gojenkinslambda.git'
         sh 'printenv'
+        sh 'sudo apt-get install -y zip'
       }
     }
     stage('Zip') {
