@@ -41,7 +41,8 @@ node {
         
             sh 'printenv'
             sh '''
-            echo AWS_ACCESS_KEY_ID == ${env.TEST}
+            echo AWS_ACCESS_KEY_ID == ${TEST}
+            echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
             '''
 
             stage 'Dependencies'
