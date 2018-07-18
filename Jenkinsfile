@@ -25,60 +25,62 @@
 
 
 //THIS WORKED
-// node {
-//     def root = tool name: 'Golang', type: 'go'
-//     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
-//         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
-//             env.PATH="${GOPATH}/bin:$PATH"
+node {
+    def root = tool name: 'Golang', type: 'go'
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
+        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+            env.PATH="${GOPATH}/bin:$PATH"
             
-//             stage 'Checkout'
+            stage 'Checkout'
         
-//             git url: 'https://github.com/getmahen/gojenkinslambda.git'
+            git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
-//             sh 'printenv'
+            sh 'printenv'
 
-//             stage 'Dependencies'
-//             sh 'go version'
-//             sh 'go get -u github.com/golang/dep/...'
-//             sh 'dep ensure -v'
+            stage 'Dependencies'
+            sh 'sudo apt-get install -y zip'
+            sh 'go version'
+            sh 'go get -u github.com/golang/dep/...'
+            sh 'dep ensure -v'
             
-//             stage 'Test'
-//             sh 'make test'
+            stage 'Test'
+            sh 'make test'
             
-//             stage 'Build'
-//             sh 'make build'
+            stage 'Build'
+            sh 'make build'
             
-//             stage 'Zip and package'
+            stage 'Zip and package'
             
-//             sh '''
-//             zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
-//             '''
-//             //sh 'ls -latr ./checkipaddress'
+            //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
+            sh '''
+            zip -v ./checkipaddress/checkipaddress.zip checkipaddress
+            '''
+            sh 'ls -latr ./checkipaddress'
 
-//             stage 'Deploy'
-//             // Do nothing.
-//         }
-//     }
-// }
-
-
-pipeline {
-  agent any
-
-  stages {
-    stage('Checkout') {
-      steps {
-        git url: 'https://github.com/getmahen/gojenkinslambda.git'
-        sh 'printenv'
-        sh 'sudo apt-get install -y zip'
-      }
+            stage 'Deploy'
+            // Do nothing.
+        }
     }
-    stage('Zip') {
-      steps {
-        sh '''
-        zip checkipaddress.zip .
-        '''
-      }
-    }
-  }
 }
+
+
+// pipeline {
+//   agent any
+
+//   stages {
+//     stage('Checkout') {
+//       steps {
+//         git url: 'https://github.com/getmahen/gojenkinslambda.git'
+//         sh 'printenv'
+//         sh 'sudo apt-get install -y zip'
+//       }
+//     }
+//     stage('Zip') {
+//       steps {
+//         sh '''
+//         zip checkipaddress.zip .
+//         '''
+//       }
+//     }
+//   }
+// }

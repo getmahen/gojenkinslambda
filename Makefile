@@ -42,6 +42,6 @@ build: clean
 
 .PHONY: package
 package: build
-	cd checkipaddress && zip checkipaddress.zip checkipaddress
+	cd checkipaddress && zip -v checkipaddress.zip checkipaddress
 
  
