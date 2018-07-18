@@ -30,6 +30,10 @@ node {
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
+
+            environment {
+              AWS_ACCESS_KEY_ID     = credentials('TEST')
+            }
             
             stage 'Checkout'
         
@@ -57,7 +61,7 @@ node {
             '''
             sh 'ls -latr ./checkipaddress'
 
-            stage 'Deploy'
+            stage 'Upload package'
             // Do nothing.
         }
     }
