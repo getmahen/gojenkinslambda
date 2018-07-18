@@ -49,10 +49,10 @@ node {
             sh 'make build'
             
             stage 'Zip and package'
-            sh 'Zipping the binary..'
             //sh 'zip zipFile: checkipaddress.zip checkipaddress'
+            
             sh '''
-            zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress/checkipaddress'
+            zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             '''
             sh 'ls -latr ./checkipaddress'
 
