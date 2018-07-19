@@ -11,13 +11,11 @@ pipeline {
       steps {
         git url: 'https://github.com/getmahen/gojenkinslambda.git'
       }
-      steps {
-        sh 'printenv'
-      }
     }
 
     stage('Dependencies') {
       steps {
+        sh 'printenv'
         sh 'sudo apt-get install -y zip'
         sh 'go version'
         sh 'go get -u github.com/golang/dep/...'
