@@ -8,8 +8,6 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
             
             stage 'Checkout'
-            sh 'docker run --network host " -w /app -v pwd:/app hashicorp/terraform:light'
-            sh 'docker ps -a'
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
 
@@ -43,8 +41,6 @@ node {
             '''
             
             stage 'Deploy using Terraform'
-            // sh 'docker run --network host " -w /app -v `pwd`:/app hashicorp/terraform:light'
-            // sh 'docker ps'
 
         }
     }
