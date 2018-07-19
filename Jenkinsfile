@@ -11,13 +11,10 @@ node {
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
+            sh 'docker run --network host " -w /app -v `pwd`:/app hashicorp/terraform:light'
+            sh 'docker ps -a'
+
             sh 'printenv'
-            // sh '''
-            // echo AWS_ACCESS_KEY_ID == ${TEST}
-            // echo AWS_ACCESS_KEY_ID_SCOPE == ${AWS_ACCESS_KEY_ID}
-            // ls -la
-            // '''
-            //s3Upload(file:'README.md', bucket:'testjenkinsartifacts', path:'README.md')
 
             stage 'Dependencies'
             sh 'sudo apt-get install -y zip'
@@ -33,7 +30,6 @@ node {
             
             stage 'Zip and package'
             
-            //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             sh '''
             cd checkipaddress && zip -v checkipaddress.zip checkipaddress
             '''
@@ -48,7 +44,8 @@ node {
             '''
             
             stage 'Deploy using Terraform'
-            //sh 'terraform version'
+            // sh 'docker run --network host " -w /app -v `pwd`:/app hashicorp/terraform:light'
+            // sh 'docker ps'
 
         }
     }
