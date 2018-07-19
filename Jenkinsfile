@@ -6,11 +6,6 @@ node {
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
-            
-            stage 'TF Docker container'
-            sh '''
-            docker run --rm -w /app  hashicorp/terraform:light version
-            '''
 
             stage 'Checkout'
         
@@ -46,7 +41,10 @@ node {
             '''
             
             stage 'Deploy using Terraform'
-
+            sh '''
+            TERRAFORM_CMD = 'docker run --rm -w /app -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v `pwd`/infrastructure/terraform:/app hashicorp/terraform:light'
+            ${TERRAFORM_CMD} init -backend-config=./backendConfigs/dev
+            '''
         }
     }
 }
