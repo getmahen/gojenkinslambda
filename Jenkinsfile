@@ -4,8 +4,9 @@ pipeline {
   stages {
     stage('Checkout') {
       environment {
-        GOPATH=credentials('JENKINS_HOME')/jobs/credentials('JOB_NAME')/builds/credentials('BUILD_ID')/
-        PATH=$GOPATH + '/bin:' + credentials('PATH')
+        //GOPATH = credentials('JENKINS_HOME')/jobs/credentials('JOB_NAME')/builds/credentials('BUILD_ID')/
+        GOPATH = "${env.JENKINS_HOME + '/jobs/' + env.JOB_NAME}"
+        PATH = $GOPATH + '/bin:' + credentials('PATH')
       }
       steps {
         git url: 'https://github.com/getmahen/gojenkinslambda.git'
