@@ -43,7 +43,14 @@ node {
             stage 'Deploy using Terraform'
             sh '''
             TERRAFORM_CMD="docker run --rm -w /app -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v `pwd`/infrastructure/terraform:/app hashicorp/terraform:light"
+            echo 'Initializing Terraform backend'
             ${TERRAFORM_CMD} init -backend-config=./backendConfigs/dev
+
+            echo 'Executing Terraform plan'
+            ${TERRAFORM_CMD} plan
+
+            echo 'Executing Terraform plan'
+            ${TERRAFORM_CMD} apply
             '''
         }
     }
