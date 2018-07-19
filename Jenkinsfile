@@ -9,7 +9,7 @@ node {
             
             stage 'TF Docker container'
             sh '''
-            sh 'docker run --rm -w /app  hashicorp/terraform:light' version
+            docker run --rm -w /app  hashicorp/terraform:light version
             '''
 
             stage 'Checkout'
