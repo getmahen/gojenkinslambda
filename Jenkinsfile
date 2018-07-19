@@ -8,6 +8,7 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
             
             stage 'Checkout'
+            sh 'terraform version' //Temporary
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
@@ -48,7 +49,7 @@ node {
             '''
             
             stage 'Deploy using Terraform'
-            sh 'terraform version'
+            //sh 'terraform version'
 
         }
     }
