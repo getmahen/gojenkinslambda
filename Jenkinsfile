@@ -8,7 +8,6 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
             
             stage 'Checkout'
-            sh 'terraform version' //Temporary
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
         
@@ -36,7 +35,7 @@ node {
             
             //zip zipFile: './checkipaddress/checkipaddress.zip', dir: './checkipaddress', glob: './checkipaddress/checkipaddress'
             sh '''
-            zip -v ./checkipaddress/checkipaddress.zip checkipaddress
+            cd checkipaddress && zip -v checkipaddress.zip checkipaddress
             '''
             sh 'ls -latr ./checkipaddress'
 
