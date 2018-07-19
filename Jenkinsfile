@@ -1,28 +1,4 @@
 #!/usr/bin/env groovy
-// pipeline {
-//     agent any
-//     stages {
-//         stage('Build') {
-//             steps {
-//                 echo 'Building'
-//                 sh 'make build'
-//                 sh 'ls -la'
-//             }
-//         }
-//         stage('Test') {
-//             steps {
-//                 echo 'Testing'
-//                 sh 'make test'
-//             }
-//         }
-//         stage('Deploy') {
-//             steps {
-//                 echo 'Deploying'
-//             }
-//         }
-//     }
-// }
-
 
 //THIS WORKED
 node {
@@ -70,7 +46,10 @@ node {
             export AWS_DEFAULT_REGION=us-east-2 
             aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip
             '''
-            // Do nothing.
+            
+            stage 'Deploy using Terraform'
+            sh 'terraform version'
+
         }
     }
 }
