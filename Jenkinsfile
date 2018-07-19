@@ -7,6 +7,11 @@ node {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
             
+            stage 'TF Docker container'
+            sh '''
+            sh 'docker run --rm -w /app -v `pwd`/infrastructure/terraform:/app hashicorp/terraform:light' version
+            '''
+
             stage 'Checkout'
         
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
