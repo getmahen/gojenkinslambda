@@ -48,6 +48,9 @@ node {
 
             echo 'Executing Terraform plan'
             ${TERRAFORM_CMD} plan
+            
+            echo 'Executing Terraform apply...'
+            ${TERRAFORM_CMD} apply -lock=false -input=false
             '''
         }
     }
