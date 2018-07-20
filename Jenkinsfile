@@ -28,10 +28,9 @@ pipeline {
             }
             steps {
                 
-                steps {
-                  sh 'go version'
-                  sh 'ls -la'
-                }
+                sh 'go version'
+                sh 'ls -la'
+                
                 // script {
                 //     // You could split this up into multiple stages if you wanted to
                 //     stage('Compile:Go') {
