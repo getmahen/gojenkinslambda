@@ -43,12 +43,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Bundle') {
-            steps {
-                
-            }
-        }
     }
 
     post {
