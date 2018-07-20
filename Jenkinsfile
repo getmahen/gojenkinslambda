@@ -46,36 +46,48 @@
 
 
 
-node {
-        stage("Main build") {
+// node {
+//         stage("Main build") {
 
-            git url: 'https://github.com/getmahen/gojenkinslambda.git'
+//             git url: 'https://github.com/getmahen/gojenkinslambda.git'
 
-            docker.image('golang:1.9-alpine').inside {
+//             docker.image('golang:1.9-alpine').inside {
 
-              stage("Install Bundler") {
-                sh 'echo Version of Go****'
-                sh 'go version'
-                sh 'go get -u github.com/golang/dep/...'
-              }
+//               stage("Install Bundler") {
+//                 sh 'go version'
+//                 sh 'go get -u github.com/golang/dep/...'
+//               }
 
-              stage("Use Bundler to install dependencies") {
-                sh 'dep ensure -v'
-              }
+//               stage("Use Bundler to install dependencies") {
+//                 sh 'dep ensure -v'
+//               }
 
-              stage("Build package") {
-                sh 'make build'
-              }
+//               stage("Build package") {
+//                 sh 'make build'
+//               }
 
-              // stage("Archive package") {
-              //   archive (includes: 'pkg/*.deb')
-              // }
+//               // stage("Archive package") {
+//               //   archive (includes: 'pkg/*.deb')
+//               // }
 
-           }
+//            }
 
+//         }
+
+//         // Clean up workspace
+//         //step([$class: 'WsCleanup'])
+
+// }
+
+pipeline {
+    agent {
+        docker { image 'node:7-alpine' }
+    }
+    stages {
+        stage('Test') {
+            steps {
+                sh 'node --version'
+            }
         }
-
-        // Clean up workspace
-        //step([$class: 'WsCleanup'])
-
+    }
 }
