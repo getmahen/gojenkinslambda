@@ -51,7 +51,7 @@ node {
 
             git url: 'https://github.com/getmahen/gojenkinslambda.git'
 
-            docker.image('golang:1.9.2').inside {
+            docker.image('golang:1.9-alpine').inside {
 
               stage("Install Bundler") {
                 sh 'echo Version of Go****'
