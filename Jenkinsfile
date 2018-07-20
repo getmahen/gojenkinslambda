@@ -50,7 +50,7 @@ node {
             ${TERRAFORM_CMD} plan
             
             echo 'Executing Terraform apply...'
-            ${TERRAFORM_CMD} apply -lock=false -input=false
+            ${TERRAFORM_CMD} apply -lock=false -input=false -auto-approve
             '''
         }
     }
