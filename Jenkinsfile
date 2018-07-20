@@ -31,7 +31,8 @@ pipeline {
                 // it is more consistent with what I do below
                 script {
                     // You could split this up into multiple stages if you wanted to
-                    stage('Compile:UDP') {
+                    stage('Compile:Go') {
+                      sh 'ls -la'
                       sh 'sudo apt-get install -y zip'
                       sh 'go version'
                       sh 'go get -u github.com/golang/dep/...'
