@@ -7,9 +7,9 @@ pipeline {
     }
     stages {
         // Just a small stage to notify bitbucket that we're under way
-        stage('Notify') {
+        stage('checkout') {
             steps {
-                bitbucketStatusNotify 'INPROGRESS'
+                git url: 'https://github.com/getmahen/gojenkinslambda.git'
             }
         }
 
