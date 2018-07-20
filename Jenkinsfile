@@ -41,18 +41,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        // Finally let bitbucket know
-        success {
-            bitbucketStatusNotify 'SUCCESSFUL'
-        }
-        failure {
-            bitbucketStatusNotify 'FAILED'
-        }
-        always {
-            // And cleanup
-            deleteDir()
-        }
-    }
 }
