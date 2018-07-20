@@ -1,8 +1,5 @@
 pipeline {
-    agent {
-        // My docker "agent" is on a VM because the host system isn't a new enough kernel to support docker
-        label 'docker'
-    }
+    agent any
     environment {
         // Some environment variables to be used later
         ARTIFACTPATH = "output"
