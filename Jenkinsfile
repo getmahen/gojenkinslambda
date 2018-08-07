@@ -14,7 +14,7 @@ node {
             sh 'printenv'
 
             stage 'Dependencies'
-            sh 'sudo apt-get install -y zip'
+            //sh 'sudo apt-get install -y zip'
             sh 'go version'
             sh 'go get -u github.com/golang/dep/...'
             sh 'dep ensure -v'
@@ -34,6 +34,7 @@ node {
 
             stage 'Upload package to AWS S3 bucket'
             sh '''
+            set +x
             export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} 
             export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} 
             export AWS_DEFAULT_REGION=us-west-2 
@@ -42,6 +43,7 @@ node {
             
             stage 'Deploy using Terraform'
             sh '''
+            set +x
             TERRAFORM_CMD="docker run --rm -w /app -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -v `pwd`/infrastructure/terraform:/app hashicorp/terraform:light"
             echo 'Initializing Terraform backend'
             ${TERRAFORM_CMD} init -backend-config=./backendConfigs/dev
