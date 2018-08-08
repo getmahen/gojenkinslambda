@@ -34,9 +34,7 @@ node {
 
             stage 'Upload package to AWS S3 bucket'
             sh '''
-            set +x
-            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} 
-            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} 
+            set +x 
             export AWS_DEFAULT_REGION=us-west-2 
             aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip
             '''
