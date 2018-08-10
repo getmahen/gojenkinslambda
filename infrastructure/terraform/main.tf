@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "checkipaddress" {
   s3_bucket     = "${data.aws_s3_bucket_object.checkipaddress_pkg.bucket}"//"testjenkinsartifacts"
   s3_key        = "${data.aws_s3_bucket_object.checkipaddress_pkg.key}"//"checkipaddress.zip"
-  //s3_object_version = "${data.aws_s3_bucket_object.checkipaddress_pkg.version_id}"
+  s3_object_version = "${data.aws_s3_bucket_object.checkipaddress_pkg.version_id}"
   function_name = "checkipaddress"
   runtime       = "go1.x"
   handler       = "checkipaddress"
@@ -33,7 +33,7 @@ resource "aws_lambda_alias" "checkipaddress_alias" {
   name             = "checkipaddressalias"
   description      = "a sample description"
   function_name    = "${aws_lambda_function.checkipaddress.arn}"
-  function_version = "3"//"${data.aws_lambda_function.checkipaddress_data.version}"//"1"
+  function_version = "1"//"${data.aws_lambda_function.checkipaddress_data.version}"//"1"
   # routing_config   = {
   #   additional_version_weights = {
   #     "2" = 0.5
