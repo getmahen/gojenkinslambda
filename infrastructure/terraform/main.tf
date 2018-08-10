@@ -8,6 +8,7 @@ resource "aws_lambda_function" "checkipaddress" {
   role          = "${aws_iam_role.checkipaddress_role.arn}"
   timeout       = 10
   description   = "Test Lambda function"
+  publish       = true
 }
 
 resource "aws_iam_role" "checkipaddress_role" {
