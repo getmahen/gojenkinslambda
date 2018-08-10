@@ -33,7 +33,7 @@ resource "aws_lambda_alias" "checkipaddress_alias" {
   name             = "checkipaddressalias"
   description      = "a sample description"
   function_name    = "${aws_lambda_function.checkipaddress.arn}"
-  function_version = "${data.aws_lambda_function.checkipaddress_data.version}"//"1"
+  function_version = "3"//"${data.aws_lambda_function.checkipaddress_data.version}"//"1"
   # routing_config   = {
   #   additional_version_weights = {
   #     "2" = 0.5
