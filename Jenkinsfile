@@ -113,64 +113,37 @@
 
 /////////////////VERSION 3 with Go Docker image/////////////////
 pipeline {
-    agent any
-    // environment {
-    // }
-    stages {
-        // Just a small stage to notify bitbucket that we're under way
-        stage('checkout') {
-            steps {
-                git url: 'https://github.com/getmahen/gojenkinslambda.git'
-            }
-        }
-
-        
-        // We could parallelize it, but I've chosen not to, mostly due to resource restrictions
-        // The first build-pass will be a golang build environment
-        stage('Docker:Go') {
-            agent {
-                // Use golang
-                docker {
-                    image 'golang:1.9.2'
-                    // Use the same node as the rest of the build
-                    reuseNode true
-                    // Do go-platform stuff and put my app into the right directory
-                    args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-                }
-            }
-            steps {
-                
-                sh 'go version'
-                
-                //script {
-                    // You could split this up into multiple stages if you wanted to
-                    stage('Compile:Go') {
-                      sh 'ls -latr'
-                      sh 'go get -u github.com/golang/dep/...'
-
-                      sh '''
-                      mkdir -p "$GOPATH/src/gojenkinslambda"
-                      cp . -r "$GOPATH/src/gojenkinslambda"
-                      cd "$GOPATH/src/gojenkinslambda"
-                      dep ensure -v
-                      ls -latr
-                      
-                      '''
-                    }
-                //}
-            }
-
-            steps {
-              stage('Running Unit tests..') {
-                        sh 'make test'
-                    }
-            }
+    agent {
+        docker { 
+          image 'golang:1.9.2' 
+          // Use the same node as the rest of the build
+          reuseNode true
+          // Do go-platform stuff and put my app into the right directory
+          args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
         }
     }
-
-     post {
-        always {
-            echo 'Finished building.....'
+    stages {
+        stage('checkout') {
+          steps {
+              git url: 'https://github.com/getmahen/gojenkinslambda.git'
+          }
         }
+
+        stage('Golang version check and install dependencies') {
+            steps {
+                sh 'go version'
+                //sh 'apt-get install git'
+                //sh 'USER root'
+                //sh 'sudo usermod -aG docker Jenkins'
+                //sh 'sudo usermod -aG root jenkins'
+                //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
+
+            }
+        }
+        // stage('Run Unit tests') {
+        //     steps {
+        //         sh 'make test'
+        //     }
+        // }
     }
 }
