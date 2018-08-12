@@ -57,7 +57,7 @@
 
 ///////VERSION 2 with Go Docker image/////////////////
 pipeline {
-    agent none
+    agent any
     // environment {
     // }
     stages {
