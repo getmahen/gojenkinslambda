@@ -23,15 +23,15 @@
 //Simple Go Docker image
 pipeline {
     agent {
-        docker { image 'golang:1.9-alpine' }
+        docker { image 'golang:1.10-alpine' }
     }
     stages {
         stage('Golang version check and install dependencies') {
             steps {
                 sh 'go version'
                 //sh 'apt-get install git'
-                sh 'USER root'
-                sh 'sudo apk update && sudo apk upgrade && sudo apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
+                //sh 'USER root'
+                sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
                 sh 'go get -u github.com/golang/dep/...'
                 sh 'dep ensure -v'
