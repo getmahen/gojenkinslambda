@@ -65,7 +65,7 @@ pipeline {
         stage('checkout') {
             steps {
                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
-                sh "JENKINS_HOME== ${env.JENKINS_HOME}"
+                //sh "JENKINS_HOME== ${env.JENKINS_HOME}"
                 //sh "WORKSPACE== ${env.WORKSPACE}"
                 sh 'pwd'
                 sh 'ls -latr'
