@@ -104,7 +104,7 @@ pipeline {
                       mkdir -p "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       pwd
-                      ln -s $GOPATH/src/gojenkinslambda ~/go/src/gojenkinslambda
+                      sudo ln -s $GOPATH/src/gojenkinslambda /go/src/gojenkinslambda
                       '''
 
                       sh 'dep ensure -v'
