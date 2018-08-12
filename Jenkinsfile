@@ -102,9 +102,9 @@ pipeline {
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
+                      mv * "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
-                      pwd
-                      ln -s $GOPATH/src/gojenkinslambda /go/src/gojenkinslambda
+                      ls -latr
                       '''
 
                       sh 'dep ensure -v'
