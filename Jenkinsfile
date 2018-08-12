@@ -91,8 +91,7 @@ pipeline {
                     // You could split this up into multiple stages if you wanted to
                     stage('Compile:Go') {
                       sh 'ls -la'
-                      sh 'sudo apt-get install -y zip'
-                      sh 'go version'
+                      //sh 'sudo apt-get install -y zip'
                       sh 'go get -u github.com/golang/dep/...'
                       sh 'dep ensure -v'
                     }
