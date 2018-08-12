@@ -30,6 +30,7 @@ pipeline {
             steps {
                 sh 'go version'
                 //sh 'apt-get install git'
+                sh 'USER root'
                 sh 'sudo apk update && sudo apk upgrade && sudo apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
                 sh 'go get -u github.com/golang/dep/...'
