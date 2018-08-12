@@ -20,15 +20,15 @@
 //  }
 
 
-//Simple NodeJs Docker image
+//Simple Go Docker image
 pipeline {
     agent {
-        docker { image 'node:7-alpine' }
+        docker { image 'golang:1.9-alpine' }
     }
     stages {
         stage('Test') {
             steps {
-                sh 'node --version'
+                sh 'go version'
             }
         }
     }
