@@ -65,6 +65,8 @@ pipeline {
         stage('checkout') {
             steps {
                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
+                sh "JENKINS_HOME== ${env.JENKINS_HOME}"
+                sh "WORKSPACE== ${env.WORKSPACE}"
             }
         }
 
@@ -79,7 +81,7 @@ pipeline {
                     // Use the same node as the rest of the build
                     reuseNode true
                     // Do go-platform stuff and put my app into the right directory
-                    //args '-v $WORKSPACE:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
+                    args '-v $JENKINS_HOME:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
                 }
             }
             steps {
