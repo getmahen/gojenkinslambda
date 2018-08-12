@@ -26,9 +26,16 @@ pipeline {
         docker { image 'golang:1.9-alpine' }
     }
     stages {
-        stage('Test') {
+        stage('Golang version check and install dependencies') {
             steps {
                 sh 'go version'
+                sh 'go get -u github.com/golang/dep/...'
+                sh 'dep ensure -v'
+            }
+        }
+        stage('Run Unit tests') {
+            steps {
+                sh 'make test'
             }
         }
     }
