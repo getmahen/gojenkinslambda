@@ -150,16 +150,19 @@ pipeline {
         }
         stage('Running Unit tests....') {
             steps {
+                sh 'cd "$GOPATH/src/gojenkinslambda"'
                 sh 'make test'
             }
         }
         stage('Builing artifacts....') {
             steps {
+                sh 'cd "$GOPATH/src/gojenkinslambda"'
                 sh 'make build'
             }
         }
         stage('Packaging artifacts....') {
             steps {
+                sh 'cd "$GOPATH/src/gojenkinslambda"'
                 sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
                 sh 'ls -latr ./checkipaddress'
             }
