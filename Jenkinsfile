@@ -105,9 +105,10 @@ pipeline {
                       mv * "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       ls -latr
+                      dep ensure -v
                       '''
 
-                      sh 'dep ensure -v'
+                      //sh 'dep ensure -v'
                     }
                 }
             }
