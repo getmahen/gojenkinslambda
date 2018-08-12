@@ -81,7 +81,7 @@ pipeline {
                     // Use the same node as the rest of the build
                     reuseNode true
                     // Do go-platform stuff and put my app into the right directory
-                    args '-v $JENKINS_HOME:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
+                    args '-v ${env.WORKSPACE}:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
                 }
             }
             steps {
