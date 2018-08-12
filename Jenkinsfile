@@ -100,6 +100,10 @@ pipeline {
                       sh 'pwd'
                       //sh 'cd $GOPATH/src/gojenkinslambda'
 
+                      mkdir -p "$GOPATH/src/gojenkinslambda"
+                      cp . "$GOPATH/src/gojenkinslambda"
+                      cd "$GOPATH/src/gojenkinslambda"
+
                       sh 'dep ensure -v'
                     }
                 }
