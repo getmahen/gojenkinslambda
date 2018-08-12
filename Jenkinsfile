@@ -146,11 +146,23 @@ pipeline {
                   ls -latr
                 '''
             }
+        
         }
-        // stage('Run Unit tests') {
-        //     steps {
-        //         sh 'make test'
-        //     }
-        // }
+        stage('Running Unit tests....') {
+            steps {
+                sh 'make test'
+            }
+        }
+        stage('Builing artifacts....') {
+            steps {
+                sh 'make build'
+            }
+        }
+        stage('Packaging artifacts....') {
+            steps {
+                sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
+                sh 'ls -latr ./checkipaddress'
+            }
+        }
     }
 }
