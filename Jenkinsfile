@@ -31,7 +31,7 @@ pipeline {
                 sh 'go version'
                 //sh 'apt-get install git'
                 //sh 'USER root'
-                //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
+                sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
                 sh 'go get -u github.com/golang/dep/...'
                 sh 'dep ensure -v'
