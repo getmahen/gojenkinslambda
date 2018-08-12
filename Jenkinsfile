@@ -67,8 +67,8 @@ pipeline {
                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
                 //sh "JENKINS_HOME== ${env.JENKINS_HOME}"
                 //sh "WORKSPACE== ${env.WORKSPACE}"
-                sh 'pwd'
-                sh 'ls -latr'
+                //sh 'pwd'
+                //sh 'ls -latr'
             }
         }
 
@@ -89,21 +89,22 @@ pipeline {
             steps {
                 
                 sh 'go version'
-                sh 'ls -latr'
+                //sh 'ls -latr'
                 
                 script {
                     // You could split this up into multiple stages if you wanted to
                     stage('Compile:Go') {
-                      sh 'ls -la'
+                      sh 'ls -latr'
                       sh 'go get -u github.com/golang/dep/...'
 
-                      sh 'pwd'
+                      sh 'printenv'
                       //sh 'cd $GOPATH/src/gojenkinslambda'
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       pwd
+                      ln -s $GOPATH/src/gojenkinslambda ~/go/src/gojenkinslambda
                       '''
 
                       sh 'dep ensure -v'
