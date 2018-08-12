@@ -35,7 +35,8 @@ pipeline {
                 //sh 'sudo usermod -aG root jenkins'
                 //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
-                sh 'chmod +x .'
+                sh 'pwd'
+                sh 'chmod +x pwd'
                 sh 'ls -latr'
                 sh 'go get -u github.com/golang/dep/...'
                 sh 'dep ensure -v'
