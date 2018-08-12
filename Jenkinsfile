@@ -129,15 +129,22 @@ pipeline {
           }
         }
 
-        stage('Golang version check and install dependencies') {
+        stage('Checking Golang version....') {
             steps {
                 sh 'go version'
-                //sh 'apt-get install git'
-                //sh 'USER root'
-                //sh 'sudo usermod -aG docker Jenkins'
-                //sh 'sudo usermod -aG root jenkins'
-                //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
+            }
+        }
 
+        stage('Install dependencies...') {
+            steps {
+                sh 'go get -u github.com/golang/dep/...'
+                sh '''
+                  mkdir -p "$GOPATH/src/gojenkinslambda"
+                  cp . -r "$GOPATH/src/gojenkinslambda"
+                  cd "$GOPATH/src/gojenkinslambda"
+                  dep ensure -v
+                  ls -latr
+                '''
             }
         }
         // stage('Run Unit tests') {
