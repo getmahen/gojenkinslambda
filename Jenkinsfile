@@ -31,6 +31,8 @@ pipeline {
                 sh 'go version'
                 //sh 'apt-get install git'
                 //sh 'USER root'
+                //sh 'sudo usermod -aG docker Jenkins'
+                sh 'sudo usermod -aG root jenkins'
                 sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
                 sh 'go get -u github.com/golang/dep/...'
