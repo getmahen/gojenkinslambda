@@ -102,7 +102,7 @@ pipeline {
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
-                      cp . "$GOPATH/src/gojenkinslambda"
+                      cp . -r "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       '''
 
