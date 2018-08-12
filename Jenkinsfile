@@ -35,8 +35,8 @@ pipeline {
                 //sh 'sudo usermod -aG root jenkins'
                 //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
 
-                sh "GOROOT=${env.GOROOT}"
-                sh "GOPATH=${env.GOPATH}"
+                sh "GOROOT=${GOROOT}"
+                sh "GOPATH=${GOPATH}"
                 sh 'pwd'
                 //sh 'chmod +x pwd()'
                 sh 'ls -latr'
