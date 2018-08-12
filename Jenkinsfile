@@ -83,7 +83,7 @@ pipeline {
                     // Use the same node as the rest of the build
                     reuseNode true
                     // Do go-platform stuff and put my app into the right directory
-                    args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
+                    args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes'
                 }
             }
             steps {
@@ -104,7 +104,7 @@ pipeline {
                       mkdir -p "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       pwd
-                      sudo ln -s $GOPATH/src/gojenkinslambda /go/src/gojenkinslambda
+                      ln -s $GOPATH/src/gojenkinslambda /go/src/gojenkinslambda
                       '''
 
                       sh 'dep ensure -v'
