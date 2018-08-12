@@ -6,11 +6,12 @@
          //git url: 'https://github.com/getmahen/gojenkinslambda.git'
          checkout scm
          sh 'printenv'
+         echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
        }
      }
      stage('build') {
        steps {
-         sh 'echo Go path ='+ ${GOPATH}
+         sh 'echo Go path ='+ ${env.GOPATH}
          sh 'go version'
          sh 'make build'
        }
