@@ -93,6 +93,10 @@ pipeline {
                       sh 'ls -la'
                       //sh 'sudo apt-get install -y zip'
                       sh 'go get -u github.com/golang/dep/...'
+
+                      sh 'pwd'
+                      sh 'cd /go/src/gojenkinslambda'
+                      
                       sh 'dep ensure -v'
                     }
                 }
