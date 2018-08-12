@@ -79,7 +79,7 @@ pipeline {
                     // Use the same node as the rest of the build
                     reuseNode true
                     // Do go-platform stuff and put my app into the right directory
-                    args '-v $WORKSPACE:/go/src/gojenkinslambda -w /go/src/gojenkinslambda'
+                    args '-v $WORKSPACE:/go/src/gojenkinslambda -w $GOPATH/src/gojenkinslambda'
                 }
             }
             steps {
@@ -91,12 +91,11 @@ pipeline {
                     // You could split this up into multiple stages if you wanted to
                     stage('Compile:Go') {
                       sh 'ls -la'
-                      //sh 'sudo apt-get install -y zip'
                       sh 'go get -u github.com/golang/dep/...'
 
                       sh 'pwd'
                       sh 'cd /go/src/gojenkinslambda'
-                      
+
                       sh 'dep ensure -v'
                     }
                 }
