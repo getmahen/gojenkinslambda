@@ -102,7 +102,7 @@ pipeline {
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
-                      mv * "$GOPATH/src/gojenkinslambda"
+                      sudo mv * "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       '''
 
