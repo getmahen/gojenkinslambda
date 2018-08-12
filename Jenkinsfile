@@ -157,11 +157,13 @@ pipeline {
                       
                       '''
                     }
-                    
-                    stage('Running Unit tests..') {
+                //}
+            }
+
+            steps {
+              stage('Running Unit tests..') {
                         sh 'make test'
                     }
-                //}
             }
         }
     }
