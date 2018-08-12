@@ -29,6 +29,7 @@ pipeline {
         stage('Golang version check and install dependencies') {
             steps {
                 sh 'go version'
+                sh 'apt-get install git'
                 sh 'go get -u github.com/golang/dep/...'
                 sh 'dep ensure -v'
             }
