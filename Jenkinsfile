@@ -113,13 +113,13 @@
 //     }
 // }
 
-node {
-    docker.image('node:7-alpine').inside{
-      stage('NodeJs Version') {
-        sh 'node --version'
-      }
-    }
-}
+// node {
+//     docker.image('node:7-alpine').inside{
+//       stage('NodeJs Version') {
+//         sh 'node --version'
+//       }
+//     }
+// }
 
 
 // node {
