@@ -83,7 +83,7 @@ pipeline {
                     // Use the same node as the rest of the build
                     reuseNode true
                     // Do go-platform stuff and put my app into the right directory
-                    args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes'
+                    args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
                 }
             }
             steps {
