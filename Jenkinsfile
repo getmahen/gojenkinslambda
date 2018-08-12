@@ -106,6 +106,8 @@ pipeline {
                       cd "$GOPATH/src/gojenkinslambda"
                       ls -latr
                       dep ensure -v
+                      ls -latr
+                      make test
                       '''
 
                       //sh 'dep ensure -v'
