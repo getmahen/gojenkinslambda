@@ -11,7 +11,7 @@
      }
      stage('build') {
        steps {
-         sh 'echo Go path ='+ ${env.GOPATH}
+         sh "echo Go path = ${env.GOPATH}"
          sh 'go version'
          sh 'make build'
        }
