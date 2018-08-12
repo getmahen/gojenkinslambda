@@ -142,7 +142,7 @@ pipeline {
                 
                 sh 'go version'
                 
-                script {
+                //script {
                     // You could split this up into multiple stages if you wanted to
                     stage('Compile:Go') {
                       sh 'ls -latr'
@@ -161,7 +161,7 @@ pipeline {
                     stage('Running Unit tests..') {
                         sh 'make test'
                     }
-                }
+                //}
             }
         }
     }
@@ -170,4 +170,5 @@ pipeline {
         always {
             echo 'Finished building.....'
         }
+    }
 }
