@@ -55,7 +55,63 @@
 
 
 
-///////VERSION 2 with Go Docker image/////////////////
+/////////////////VERSION 2 with Go Docker image - THIS WORKS UNTIL THE UNIT TEST POINT/////////////////
+// pipeline {
+//     agent any
+//     // environment {
+//     // }
+//     stages {
+//         // Just a small stage to notify bitbucket that we're under way
+//         stage('checkout') {
+//             steps {
+//                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
+//             }
+//         }
+
+        
+//         // We could parallelize it, but I've chosen not to, mostly due to resource restrictions
+//         // The first build-pass will be a golang build environment
+//         stage('Docker:Go') {
+//             agent {
+//                 // Use golang
+//                 docker {
+//                     image 'golang:1.9.2'
+//                     // Use the same node as the rest of the build
+//                     reuseNode true
+//                     // Do go-platform stuff and put my app into the right directory
+//                     args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
+//                 }
+//             }
+//             steps {
+                
+//                 sh 'go version'
+                
+//                 script {
+//                     // You could split this up into multiple stages if you wanted to
+//                     stage('Compile:Go') {
+//                       sh 'ls -latr'
+//                       sh 'go get -u github.com/golang/dep/...'
+
+//                       sh 'printenv'
+
+//                       sh '''
+//                       mkdir -p "$GOPATH/src/gojenkinslambda"
+//                       cp . -r "$GOPATH/src/gojenkinslambda"
+//                       cd "$GOPATH/src/gojenkinslambda"
+//                       dep ensure -v
+//                       ls -latr
+//                       make test
+//                       '''
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+
+
+/////////////////VERSION 3 with Go Docker image/////////////////
 pipeline {
     agent any
     // environment {
@@ -65,10 +121,6 @@ pipeline {
         stage('checkout') {
             steps {
                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
-                //sh "JENKINS_HOME== ${env.JENKINS_HOME}"
-                //sh "WORKSPACE== ${env.WORKSPACE}"
-                //sh 'pwd'
-                //sh 'ls -latr'
             }
         }
 
@@ -89,7 +141,6 @@ pipeline {
             steps {
                 
                 sh 'go version'
-                //sh 'ls -latr'
                 
                 script {
                     // You could split this up into multiple stages if you wanted to
@@ -97,23 +148,26 @@ pipeline {
                       sh 'ls -latr'
                       sh 'go get -u github.com/golang/dep/...'
 
-                      sh 'printenv'
-                      //sh 'cd $GOPATH/src/gojenkinslambda'
-
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
                       cp . -r "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
-                      ls -latr
                       dep ensure -v
                       ls -latr
-                      make test
+                      
                       '''
-
-                      //sh 'dep ensure -v'
+                    }
+                    
+                    stage('Running Unit tests..') {
+                        sh 'make test'
                     }
                 }
             }
         }
     }
+
+     post {
+        always {
+            echo 'Finished building.....'
+        }
 }
