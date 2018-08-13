@@ -94,7 +94,7 @@ pipeline {
 
                       //sh 'printenv'
                       sh 'apt-get update'
-                      sh 'apt-get install -y zip'
+                      sh 'apt-get install -y zip aws-cli'
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
