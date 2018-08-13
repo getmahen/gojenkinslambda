@@ -93,6 +93,7 @@ pipeline {
                       sh 'go get -u github.com/golang/dep/...'
 
                       //sh 'printenv'
+                      sh 'apt-get update'
                       sh 'apt-get install -y zip'
 
                       sh '''
