@@ -93,7 +93,7 @@ pipeline {
                       sh 'go get -u github.com/golang/dep/...'
 
                       //sh 'printenv'
-                      sh 'apt-get install zip'
+                      sh 'apt-get install -y zip'
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
