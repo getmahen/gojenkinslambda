@@ -274,6 +274,8 @@ pipeline {
                       cp . -r "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       dep ensure -v
+                      ls -latr
+                      stash includes: 'pwd()', name: 'buildfiles'
                     '''
             }
             stage('Running Unit tests....') {
