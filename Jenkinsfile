@@ -116,7 +116,70 @@
 
 
 
-///////////////VERSION 3 with Go Docker image/////////////////
+///////////////VERSION 3 with Go Docker image - Works until Installing dependencies and looses context between stages/////////////////
+// pipeline {
+//     agent {
+//         docker { 
+//           image 'golang:1.9.2' 
+//           // Use the same node as the rest of the build
+//           reuseNode true
+//           // Do go-platform stuff and put my app into the right directory
+//           args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
+
+//           customWorkspace "${env.GOPATH}/src/gojenkinslambda"
+//         }
+//     }
+//     stages {
+//         stage('checkout') {
+//           steps {
+//               git url: 'https://github.com/getmahen/gojenkinslambda.git'
+//           }
+//         }
+
+//         stage('Checking Golang version....') {
+//             steps {
+//                 sh 'go version'
+//             }
+//         }
+
+//         stage('Install dependencies and run unit tests...') {
+//             steps {
+//                 sh 'go get -u github.com/golang/dep/...'
+//                 sh '''
+//                   mkdir -p "$GOPATH/src/gojenkinslambda"
+//                   cp . -r "$GOPATH/src/gojenkinslambda"
+//                   cd "$GOPATH/src/gojenkinslambda"
+//                   dep ensure -v
+//                 '''
+//             }
+        
+//         }
+//         stage('Running Unit tests....') {
+//             steps {
+//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
+//                 sh 'ls -latr'
+//                 sh 'make test'
+//             }
+//         }
+//         stage('Builing artifacts....') {
+//             steps {
+//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
+//                 sh 'make build'
+//             }
+//         }
+//         stage('Packaging artifacts....') {
+//             steps {
+//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
+//                 sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
+//                 sh 'ls -latr ./checkipaddress'
+//             }
+//         }
+//     }
+// }
+
+
+
+///////////////VERSION 4 with Go Docker image - With Script{} to combine all stages/////////////////
 pipeline {
     agent {
         docker { 
@@ -130,7 +193,10 @@ pipeline {
         }
     }
     stages {
-        stage('checkout') {
+      steps {
+        script {
+
+          stage('checkout') {
           steps {
               git url: 'https://github.com/getmahen/gojenkinslambda.git'
           }
@@ -149,7 +215,7 @@ pipeline {
                   mkdir -p "$GOPATH/src/gojenkinslambda"
                   cp . -r "$GOPATH/src/gojenkinslambda"
                   cd "$GOPATH/src/gojenkinslambda"
-                  sh 'dep ensure -v'
+                  dep ensure -v
                 '''
             }
         
@@ -174,5 +240,8 @@ pipeline {
                 sh 'ls -latr ./checkipaddress'
             }
         }
+        }
+      }
+        
     }
 }
