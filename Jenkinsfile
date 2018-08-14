@@ -1,301 +1,81 @@
-//  pipeline {
-//    agent any
-//    stages {
-//      stage('Checkout') {
-//        steps {
-//          //git url: 'https://github.com/getmahen/gojenkinslambda.git'
-//          checkout scm
-//          sh 'printenv'
-//          echo "Running BUILD ID: ${env.BUILD_ID}"
-//        }
-//      }
-//      stage('build') {
-//        steps {
-//          sh "echo Go path = ${env.GOPATH}"
-//          sh 'go version'
-//          sh 'make build'
-//        }
-//      }
-//    }
-//  }
+#!/usr/bin/env groovy
 
+//THIS WORKED
+node {
+    def root = tool name: 'Golang', type: 'go'
+    ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
+        withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+            env.PATH="${GOPATH}/bin:$PATH"
 
-///////VERSION 1 with Go Docker image/////////////////
-//Simple Go Docker image
-// pipeline {
-//     agent {
-//         docker { image 'pitchanon/jenkins-golang' }
-//     }
-//     stages {
-//         stage('Golang version check and install dependencies') {
-//             steps {
-//                 sh 'go version'
-//                 //sh 'apt-get install git'
-//                 //sh 'USER root'
-//                 //sh 'sudo usermod -aG docker Jenkins'
-//                 //sh 'sudo usermod -aG root jenkins'
-//                 //sh 'apk update && apk upgrade && apk add --no-cache bash git openssh && rm -rf /var/cache/apk/*'
-
-//                 sh "GOROOT=${GOROOT}"
-//                 sh "GOPATH=${GOPATH}"
-//                 sh 'pwd'
-//                 //sh 'chmod +x pwd()'
-//                 sh 'ls -latr'
-//                 sh 'go get github.com/golang/dep/cmd/dep'
-//                 sh 'dep ensure -v'
-//             }
-//         }
-//         stage('Run Unit tests') {
-//             steps {
-//                 sh 'make test'
-//             }
-//         }
-//     }
-// }
-
-
-
-/////////////////VERSION 2 with Go Docker image - THIS WORKS UNTIL THE UNIT TEST POINT/////////////////
-// pipeline {
-//     agent any
-//     // environment {
-//     // }
-//     stages {
-//         // Just a small stage to notify bitbucket that we're under way
-//         stage('checkout') {
-//             steps {
-//                 git url: 'https://github.com/getmahen/gojenkinslambda.git'
-//             }
-//         }
-
+            stage 'Checkout'
         
-//         // We could parallelize it, but I've chosen not to, mostly due to resource restrictions
-//         // The first build-pass will be a golang build environment
-//         stage('Docker:Go') {
-//             agent {
-//                 // Use golang
-//                 docker {
-//                     image 'golang:1.9.2'
-//                     // Use the same node as the rest of the build
-//                     reuseNode true
-//                     // Do go-platform stuff and put my app into the right directory
-//                     args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-//                 }
-//             }
-//             steps {
-                
-//                 sh 'go version'
-                
-//                 script {
-//                     // You could split this up into multiple stages if you wanted to
-//                     stage('Compile:Go') {
-//                       sh 'ls -latr'
-//                       sh 'go get -u github.com/golang/dep/...'
+            git url: 'https://github.com/getmahen/gojenkinslambda.git'
 
-//                       //sh 'printenv'
-//                       sh 'apt-get update'
-//                       sh 'apt-get install -y zip'
+            sh 'printenv'
 
-//                       sh '''
-//                       mkdir -p "$GOPATH/src/gojenkinslambda"
-//                       cp . -r "$GOPATH/src/gojenkinslambda"
-//                       cd "$GOPATH/src/gojenkinslambda"
-//                       dep ensure -v
-//                       ls -latr
-//                       make test
-//                       make build
-//                       make package
-//                       ls -latr ./checkipaddress
-//                       '''
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
+            stage 'Dependencies'
+            //sh 'sudo apt-get install -y zip'
+            sh 'go version'
+            sh 'go get -u github.com/golang/dep/...'
+            sh 'dep ensure -v'
+            
+            stage 'Test'
+            sh 'make test'
+            
+            stage 'Build'
+            sh 'make build'
+            
+            stage 'Zip and package'
+            
+            sh '''
+            cd checkipaddress && zip -v checkipaddress.zip checkipaddress
+            '''
+            sh 'ls -latr ./checkipaddress'
 
+            stage 'Upload package to AWS S3 bucket'
+            sh '''
+            set +x 
+            export AWS_DEFAULT_REGION=us-west-2 
+            aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip
+            '''
+            
+            stage 'Deploy using Terraform'
+            sh '''
+            set +x
+            echo 'Initializing Terraform backend'
+            terraform version
+            cd `pwd`/infrastructure/terraform
+            ls -la
+            terraform init -backend-config=./backendConfigs/dev
 
-
-///////////////VERSION 3 with Go Docker image - Works until Installing dependencies and looses context between stages/////////////////
-// pipeline {
-//     agent {
-//         docker { 
-//           image 'golang:1.9.2' 
-//           // Use the same node as the rest of the build
-//           reuseNode true
-//           // Do go-platform stuff and put my app into the right directory
-//           args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-
-//           customWorkspace "${env.GOPATH}/src/gojenkinslambda"
-//         }
-//     }
-//     stages {
-//         stage('checkout') {
-//           steps {
-//               git url: 'https://github.com/getmahen/gojenkinslambda.git'
-//           }
-//         }
-
-//         stage('Checking Golang version....') {
-//             steps {
-//                 sh 'go version'
-//             }
-//         }
-
-//         stage('Install dependencies and run unit tests...') {
-//             steps {
-//                 sh 'go get -u github.com/golang/dep/...'
-//                 sh '''
-//                   mkdir -p "$GOPATH/src/gojenkinslambda"
-//                   cp . -r "$GOPATH/src/gojenkinslambda"
-//                   cd "$GOPATH/src/gojenkinslambda"
-//                   dep ensure -v
-//                 '''
-//             }
-        
-//         }
-//         stage('Running Unit tests....') {
-//             steps {
-//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                 sh 'ls -latr'
-//                 sh 'make test'
-//             }
-//         }
-//         stage('Builing artifacts....') {
-//             steps {
-//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                 sh 'make build'
-//             }
-//         }
-//         stage('Packaging artifacts....') {
-//             steps {
-//                 sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                 sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
-//                 sh 'ls -latr ./checkipaddress'
-//             }
-//         }
-//     }
-// }
-
-
-
-///////////////VERSION 4 with Go Docker image - With Script{} to combine all stages/////////////////
-// pipeline {
-//   agent any
-//     stages {
-//       stage ('Lambda build') {
-//         agent {
-//           docker { 
-//             image 'golang:1.9.2' 
-//             // Use the same node as the rest of the build
-//             reuseNode true
-//             // Do go-platform stuff and put my app into the right directory
-//             args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-
-//             customWorkspace "${env.GOPATH}/src/gojenkinslambda"
-//           }
-//         }
-
-//         steps {
-//           script {
-
-//           stage('checkout') {
-//               git url: 'https://github.com/getmahen/gojenkinslambda.git'
-        
-//           }
-
-//           stage('Checking Golang version....') {
-//                   sh 'go version'
-//           }
-
-//           stage('Install dependencies and run unit tests...') {
-//                   sh 'go get -u github.com/golang/dep/...'
-//                   sh '''
-//                     mkdir -p "$GOPATH/src/gojenkinslambda"
-//                     cp . -r "$GOPATH/src/gojenkinslambda"
-//                     cd "$GOPATH/src/gojenkinslambda"
-//                     dep ensure -v
-//                   '''
-//           }
-//           stage('Running Unit tests....') {
-//                   sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                   sh 'ls -latr'
-//                   sh 'make test'
-//           }
-//           stage('Builing artifacts....') {
-//                   sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                   sh 'make build' 
-//           }
-//           stage('Packaging artifacts....') {
-//                   sh 'cd "$GOPATH/src/gojenkinslambda"'
-//                   sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
-//                   sh 'ls -latr ./checkipaddress'
-//             }
-//           }
-//         }
-//     }
-        
-//     }
-// }
-
-
-
-///////////////VERSION 5 with Go Docker image - With Workspace to combine all stages/////////////////
-pipeline {
-  agent any
-    stages {
-      stage ('Lambda build') {
-        agent {
-          docker { 
-            image 'golang:1.9.2' 
-            // Use the same node as the rest of the build
-            reuseNode true
-            // Do go-platform stuff and put my app into the right directory
-            args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-          }
+            echo 'Executing Terraform plan'
+            terraform plan
+            
+            echo 'Executing Terraform apply...'
+            terraform apply -lock=false -input=false -auto-approve
+            '''
         }
-
-        steps {
-          script {
-
-            stage('checkout') {
-                git url: 'https://github.com/getmahen/gojenkinslambda.git'
-          
-            }
-
-            stage('Checking Golang version....') {
-                    sh 'go version'
-            }
-
-            stage('Install dependencies and run unit tests and build...') {
-                    sh 'go get -u github.com/golang/dep/...'
-                    sh '''
-                      mkdir -p "$GOPATH/src/gojenkinslambda"
-                      cp . -r "$GOPATH/src/gojenkinslambda"
-                      cd "$GOPATH/src/gojenkinslambda"
-                      dep ensure -v
-                    '''
-                    //stash includes: '**', name: 'buildfiles'
-                    stash useDefaultExcludes: false, name: 'buildfiles'
-            }
-            stage('Running Unit tests....') {
-                    unstash 'buildfiles'
-                    sh 'ls -latr'
-                    sh 'cd "$GOPATH/src/gojenkinslambda"'
-                    sh 'make test'
-            }
-            stage('Builing artifacts....') {
-                    sh 'cd "$GOPATH/src/gojenkinslambda"'
-                    sh 'make build' 
-            }
-            stage('Packaging artifacts....') {
-                    sh 'cd "$GOPATH/src/gojenkinslambda"'
-                    sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
-                    sh 'ls -latr ./checkipaddress'
-              }
-          }
-        }
-    }
-        
     }
 }
+
+
+// pipeline {
+//   agent any
+
+//   stages {
+//     stage('Checkout') {
+//       steps {
+//         git url: 'https://github.com/getmahen/gojenkinslambda.git'
+//         sh 'printenv'
+//         sh 'sudo apt-get install -y zip'
+//       }
+//     }
+//     stage('Zip') {
+//       steps {
+//         sh '''
+//         zip checkipaddress.zip .
+//         '''
+//       }
+//     }
+//   }
+// }
