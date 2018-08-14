@@ -181,19 +181,30 @@
 
 ///////////////VERSION 4 with Go Docker image - With Script{} to combine all stages/////////////////
 pipeline {
-    agent {
-        docker { 
-          image 'golang:1.9.2' 
-          // Use the same node as the rest of the build
-          reuseNode true
-          // Do go-platform stuff and put my app into the right directory
-          args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
+    // agent {
+    //     docker { 
+    //       image 'golang:1.9.2' 
+    //       // Use the same node as the rest of the build
+    //       reuseNode true
+    //       // Do go-platform stuff and put my app into the right directory
+    //       args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
 
-          customWorkspace "${env.GOPATH}/src/gojenkinslambda"
-        }
-    }
+    //       customWorkspace "${env.GOPATH}/src/gojenkinslambda"
+    //     }
+    // }
     stages {
       stage ('Lambda build') {
+        agent {
+          docker { 
+            image 'golang:1.9.2' 
+            // Use the same node as the rest of the build
+            reuseNode true
+            // Do go-platform stuff and put my app into the right directory
+            args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
+
+            customWorkspace "${env.GOPATH}/src/gojenkinslambda"
+          }
+        }
 
         steps {
           script {
