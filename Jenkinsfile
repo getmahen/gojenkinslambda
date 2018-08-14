@@ -181,6 +181,7 @@
 
 ///////////////VERSION 4 with Go Docker image - With Script{} to combine all stages/////////////////
 pipeline {
+  agent any
     // agent {
     //     docker { 
     //       image 'golang:1.9.2' 
