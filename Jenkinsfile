@@ -276,7 +276,7 @@ pipeline {
                       dep ensure -v
                       ls -latr
                     '''
-                    stash includes: '', name: 'buildfiles'
+                    stash includes: '**', name: 'buildfiles'
             }
             stage('Running Unit tests....') {
                     unstash 'buildfiles'
