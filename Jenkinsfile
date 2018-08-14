@@ -279,8 +279,9 @@ pipeline {
                     stash includes: '', name: 'buildfiles'
             }
             stage('Running Unit tests....') {
-                    sh 'cd "$GOPATH/src/gojenkinslambda"'
+                    unstash 'buildfiles'
                     sh 'ls -latr'
+                    sh 'cd "$GOPATH/src/gojenkinslambda"'
                     sh 'make test'
             }
             stage('Builing artifacts....') {
