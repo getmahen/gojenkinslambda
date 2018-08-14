@@ -275,10 +275,11 @@ pipeline {
                       cd "$GOPATH/src/gojenkinslambda"
                       dep ensure -v
                     '''
-                    stash includes: '**', name: 'buildfiles'
+                    //stash includes: '**', name: 'buildfiles'
+                    stash useDefaultExcludes: false, name: 'buildfiles'
             }
             stage('Running Unit tests....') {
-                    //unstash 'buildfiles'
+                    unstash 'buildfiles'
                     sh 'ls -latr'
                     sh 'cd "$GOPATH/src/gojenkinslambda"'
                     sh 'make test'
