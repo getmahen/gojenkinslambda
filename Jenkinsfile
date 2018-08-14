@@ -193,55 +193,58 @@ pipeline {
         }
     }
     stages {
-      steps {
-        script {
+      stage ('Lambda build') {
 
-          stage('checkout') {
-          steps {
-              git url: 'https://github.com/getmahen/gojenkinslambda.git'
+        steps {
+          script {
+
+            stage('checkout') {
+            steps {
+                git url: 'https://github.com/getmahen/gojenkinslambda.git'
+            }
+          }
+
+          stage('Checking Golang version....') {
+              steps {
+                  sh 'go version'
+              }
+          }
+
+          stage('Install dependencies and run unit tests...') {
+              steps {
+                  sh 'go get -u github.com/golang/dep/...'
+                  sh '''
+                    mkdir -p "$GOPATH/src/gojenkinslambda"
+                    cp . -r "$GOPATH/src/gojenkinslambda"
+                    cd "$GOPATH/src/gojenkinslambda"
+                    dep ensure -v
+                  '''
+              }
+          
+          }
+          stage('Running Unit tests....') {
+              steps {
+                  sh 'cd "$GOPATH/src/gojenkinslambda"'
+                  sh 'ls -latr'
+                  sh 'make test'
+              }
+          }
+          stage('Builing artifacts....') {
+              steps {
+                  sh 'cd "$GOPATH/src/gojenkinslambda"'
+                  sh 'make build'
+              }
+          }
+          stage('Packaging artifacts....') {
+              steps {
+                  sh 'cd "$GOPATH/src/gojenkinslambda"'
+                  sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
+                  sh 'ls -latr ./checkipaddress'
+              }
+          }
           }
         }
-
-        stage('Checking Golang version....') {
-            steps {
-                sh 'go version'
-            }
-        }
-
-        stage('Install dependencies and run unit tests...') {
-            steps {
-                sh 'go get -u github.com/golang/dep/...'
-                sh '''
-                  mkdir -p "$GOPATH/src/gojenkinslambda"
-                  cp . -r "$GOPATH/src/gojenkinslambda"
-                  cd "$GOPATH/src/gojenkinslambda"
-                  dep ensure -v
-                '''
-            }
-        
-        }
-        stage('Running Unit tests....') {
-            steps {
-                sh 'cd "$GOPATH/src/gojenkinslambda"'
-                sh 'ls -latr'
-                sh 'make test'
-            }
-        }
-        stage('Builing artifacts....') {
-            steps {
-                sh 'cd "$GOPATH/src/gojenkinslambda"'
-                sh 'make build'
-            }
-        }
-        stage('Packaging artifacts....') {
-            steps {
-                sh 'cd "$GOPATH/src/gojenkinslambda"'
-                sh 'cd checkipaddress && zip -v checkipaddress.zip checkipaddress'
-                sh 'ls -latr ./checkipaddress'
-            }
-        }
-        }
-      }
+    }
         
     }
 }
