@@ -267,19 +267,18 @@ pipeline {
                     sh 'go version'
             }
 
-            stage('Install dependencies and run unit tests...') {
+            stage('Install dependencies and run unit tests and build...') {
                     sh 'go get -u github.com/golang/dep/...'
                     sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
                       cp . -r "$GOPATH/src/gojenkinslambda"
                       cd "$GOPATH/src/gojenkinslambda"
                       dep ensure -v
-                      ls -latr
                     '''
-                    stash includes: '**/**', name: 'buildfiles'
+                    stash includes: '**', name: 'buildfiles'
             }
             stage('Running Unit tests....') {
-                    unstash 'buildfiles'
+                    //unstash 'buildfiles'
                     sh 'ls -latr'
                     sh 'cd "$GOPATH/src/gojenkinslambda"'
                     sh 'make test'
