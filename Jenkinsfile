@@ -125,7 +125,7 @@ pipeline {
           reuseNode true
           // Do go-platform stuff and put my app into the right directory
           args '-v pwd:/go/src/gojenkinslambda -w /go/src/gojenkinslambda -e GRANT_SUDO=yes --user root'
-          
+
           customWorkspace "${env.GOPATH}/src/gojenkinslambda"
         }
     }
@@ -149,7 +149,6 @@ pipeline {
                   mkdir -p "$GOPATH/src/gojenkinslambda"
                   cp . -r "$GOPATH/src/gojenkinslambda"
                   cd "$GOPATH/src/gojenkinslambda"
-                  dep ensure -v
                 '''
             }
         
@@ -157,6 +156,7 @@ pipeline {
         stage('Running Unit tests....') {
             steps {
                 sh 'cd "$GOPATH/src/gojenkinslambda"'
+                sh 'dep ensure -v'
                 sh 'ls -latr'
                 sh 'make test'
             }
