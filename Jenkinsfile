@@ -94,7 +94,7 @@ pipeline {
 
                       //sh 'printenv'
                       sh 'apt-get update'
-                      sh 'apt-get install -y zip aws-cli'
+                      sh 'apt-get install -y zip'
 
                       sh '''
                       mkdir -p "$GOPATH/src/gojenkinslambda"
@@ -106,8 +106,6 @@ pipeline {
                       make build
                       make package
                       ls -latr ./checkipaddress
-                      make upload
-                      ls -latr
                       '''
                     }
                 }
