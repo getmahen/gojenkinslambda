@@ -276,7 +276,7 @@ pipeline {
                       dep ensure -v
                       ls -latr
                     '''
-                    stash includes: '$GOPATH/src/gojenkinslambda/*', name: 'buildfiles'
+                    stash includes: '', name: 'buildfiles'
             }
             stage('Running Unit tests....') {
                     sh 'cd "$GOPATH/src/gojenkinslambda"'
