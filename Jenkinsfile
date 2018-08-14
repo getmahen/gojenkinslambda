@@ -149,6 +149,7 @@ pipeline {
                   mkdir -p "$GOPATH/src/gojenkinslambda"
                   cp . -r "$GOPATH/src/gojenkinslambda"
                   cd "$GOPATH/src/gojenkinslambda"
+                  sh 'dep ensure -v'
                 '''
             }
         
@@ -156,7 +157,6 @@ pipeline {
         stage('Running Unit tests....') {
             steps {
                 sh 'cd "$GOPATH/src/gojenkinslambda"'
-                sh 'dep ensure -v'
                 sh 'ls -latr'
                 sh 'make test'
             }
