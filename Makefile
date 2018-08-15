@@ -50,7 +50,7 @@ packageall: build
 	mkdir -p buildartifacts;
 	cp -r infrastructure buildartifacts;
 	cp checkipaddress/checkipaddress buildartifacts;
-	zip -r buildartifacts.zip buildartifacts infrastruture
+	zip -r buildartifacts.zip buildartifacts
 	rm -rf buildartifacts
 
 .PHONY: upload
