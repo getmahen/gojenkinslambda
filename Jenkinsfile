@@ -100,14 +100,16 @@
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters
 node {
   //properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), string(defaultValue: 'dev', description: '', name: 'deploy_env', trim: true)])])
+  parameters {
+        string(name: 'deployenv', defaultValue: 'dev', description: 'Targeted Environment to build')
+    }
 
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
 
-            print "DEBUG: Build parameter myparam = ${params.myparam}"
-            print "DEBUG: Build parameter branch = ${params.deployenv}"
+            print "DEBUG: Build triggered for ${params.deployenv} environment..."
 
             stage('Checkout'){
                     echo 'Checking out SCM'
