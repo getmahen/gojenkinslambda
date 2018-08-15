@@ -108,6 +108,7 @@ node {
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
+            def packageName = "buildartifacts-${env.BUILD_ID}"
 
             print "DEBUG: Build triggered for ${params.deployenv} environment..."
 
@@ -128,12 +129,12 @@ node {
             }
 
             stage('Build and Package...'){
-              sh "make packageall BUILD_ID=${env.BUILD_ID}"
+              sh "make packageall PACKAGE_NAME=${packageName}"
             }
 
             stage('Upload package to AWS S3...'){
               sh 'export AWS_DEFAULT_REGION=us-west-2'
-              sh "aws s3 cp buildartifacts.zip s3://testjenkinsartifacts/${params.deployenv}/buildartifacts.zip"
+              sh "aws s3 cp ${packageName}.zip s3://testjenkinsartifacts/${params.deployenv}/${packageName}.zip"
             }
         }
     }

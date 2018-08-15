@@ -19,7 +19,7 @@
 #NEW
 BIN_DIR := $(GOPATH)/bin
 DEP := $(BIN_DIR)
-ARTIFACT_DIR := buildartifacts-$(BUILD_ID)
+PACKAGE_NAME := $(PACKAGE_NAME)
 
 # $(DEP):
 # 	@echo "Getting DEP"
@@ -30,7 +30,7 @@ ARTIFACT_DIR := buildartifacts-$(BUILD_ID)
 clean:
 	@go clean
 	rm -rf ./checkipaddress/checkipaddress && rm -rf ./checkipaddress/checkipaddress.zip
-	rm -rf $(ARTIFACT_DIR) &&  rm -rf $(ARTIFACT_DIR).zip
+	rm -rf $(PACKAGE_NAME) &&  rm -rf $(PACKAGE_NAME).zip
 
 .PHONY: test
 test:
@@ -48,11 +48,11 @@ package: build
 
 .PHONY: packageall
 packageall: build
-	mkdir -p $(ARTIFACT_DIR);
-	cp -r infrastructure $(ARTIFACT_DIR);
-	cp checkipaddress/checkipaddress $(ARTIFACT_DIR);
-	zip -r $(ARTIFACT_DIR).zip $(ARTIFACT_DIR)
-	rm -rf $(ARTIFACT_DIR)
+	mkdir -p $(PACKAGE_NAME);
+	cp -r infrastructure $(PACKAGE_NAME);
+	cp checkipaddress/checkipaddress $(PACKAGE_NAME);
+	zip -r $(PACKAGE_NAME).zip $(PACKAGE_NAME)
+	rm -rf $(PACKAGE_NAME)
 
 .PHONY: upload
 upload: package
