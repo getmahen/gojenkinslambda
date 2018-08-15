@@ -128,7 +128,7 @@ node {
             }
 
             stage('Build and Package...'){
-              sh 'make packageall'
+              sh "make packageall BUILD_ID=${env.BUILD_ID}"
             }
 
             stage('Upload package to AWS S3...'){
