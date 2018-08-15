@@ -59,7 +59,45 @@
 // }
 
 
+//THIS WORKED - With Multi STAGES
+// node {
+//     def root = tool name: 'Golang', type: 'go'
+//     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
+//         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
+//             env.PATH="${GOPATH}/bin:$PATH"
 
+//             stage('Checkout'){
+//                     echo 'Checking out SCM'
+//                     checkout scm
+//                     sh 'printenv'
+//                 }
+
+//             stage('Install Dependencies'){
+//               //sh 'sudo apt-get install -y zip'
+//               sh 'go version'
+//               sh 'go get -u github.com/golang/dep/...'
+//               sh 'dep ensure -v'
+//             }
+
+//              stage('Run Unit tests...'){
+//               sh 'make test'
+//             }
+
+//             stage('Build and Package...'){
+//               sh 'make package'
+//             }
+
+//             stage('Upload package to AWS S3...'){
+//               sh 'export AWS_DEFAULT_REGION=us-west-2'
+//               sh 'aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip'
+//             }
+//         }
+//     }
+// }
+
+
+
+////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters
 node {
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
@@ -67,6 +105,7 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
 
             print "DEBUG: Build parameter myparam = ${params.myparam}"
+            print "DEBUG: Build parameter branch = ${params.branch}"
 
             stage('Checkout'){
                     echo 'Checking out SCM'
@@ -75,7 +114,6 @@ node {
                 }
 
             stage('Install Dependencies'){
-              //sh 'sudo apt-get install -y zip'
               sh 'go version'
               sh 'go get -u github.com/golang/dep/...'
               sh 'dep ensure -v'
@@ -86,12 +124,12 @@ node {
             }
 
             stage('Build and Package...'){
-              sh 'make package'
+              sh 'make packageall'
             }
 
             stage('Upload package to AWS S3...'){
               sh 'export AWS_DEFAULT_REGION=us-west-2'
-              sh 'aws s3 cp ./checkipaddress/checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip'
+              sh "aws s3 cp buildartifacts.zip s3://testjenkinsartifacts/${params.branch}/buildartifacts.zip"
             }
         }
     }

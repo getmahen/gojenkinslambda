@@ -29,6 +29,7 @@ DEP := $(BIN_DIR)
 clean:
 	@go clean
 	rm -rf ./checkipaddress/checkipaddress && rm -rf ./checkipaddress/checkipaddress.zip
+	rm -rf buildartifacts &&  rm -rf buildartifacts.zip
 
 .PHONY: test
 test:
@@ -43,6 +44,14 @@ build: clean
 .PHONY: package
 package: build
 	cd checkipaddress && zip -v checkipaddress.zip checkipaddress
+
+.PHONY: packageall
+packageall: build
+	mkdir -p buildartifacts;
+	cp -r infrastructure buildartifacts;
+	cp checkipaddress/checkipaddress buildartifacts;
+	zip -r buildartifacts.zip buildartifacts infrastruture
+	rm -rf buildartifacts
 
 .PHONY: upload
 upload: package

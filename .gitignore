@@ -3,4 +3,5 @@ checkipaddress*
 infrastructure/terraform/.terraform
 *tfstate*
 .orig
+.DS_Store
 TODO*
