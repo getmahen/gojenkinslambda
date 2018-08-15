@@ -99,7 +99,7 @@
 
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters
 node {
-  properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), string(defaultValue: 'dev', description: '', name: 'deploy_env', trim: true)])])
+  //properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), string(defaultValue: 'dev', description: '', name: 'deploy_env', trim: true)])])
 
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
@@ -107,7 +107,7 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
 
             print "DEBUG: Build parameter myparam = ${params.myparam}"
-            print "DEBUG: Build parameter branch = ${params.deploy_env}"
+            print "DEBUG: Build parameter branch = ${params.deployenv}"
 
             stage('Checkout'){
                     echo 'Checking out SCM'
@@ -131,7 +131,7 @@ node {
 
             stage('Upload package to AWS S3...'){
               sh 'export AWS_DEFAULT_REGION=us-west-2'
-              sh "aws s3 cp buildartifacts.zip s3://testjenkinsartifacts/${params.deploy_env}/buildartifacts.zip"
+              sh "aws s3 cp buildartifacts.zip s3://testjenkinsartifacts/${params.deployenv}/buildartifacts.zip"
             }
         }
     }
