@@ -99,7 +99,7 @@
 
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters
 node {
-  properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), choice(choices: ['dev', 'qa', 'prod'], description: '', name: 'deploy_env')])])
+  properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), string(defaultValue: 'dev', description: '', name: 'deploy_env', trim: true)])])
 
     def root = tool name: 'Golang', type: 'go'
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
