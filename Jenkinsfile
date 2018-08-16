@@ -120,10 +120,10 @@ node {
             stage('Validate'){
                     echo 'Validating terraform...'
                     //dir('infrastructure/terraform')
-                    sh 'ls -latr'
-                    sh 'cd infrastructure/terraform'
-                    sh 'ls -latr'
-                    sh 'terraform validate'
+                    // sh 'ls -latr'
+                    // sh 'cd infrastructure/terraform'
+                    sh 'ls -latr infrastructure/terraform'
+                    sh 'infrastructure/terraform terraform validate'
             }
 
             stage('Install Dependencies'){
