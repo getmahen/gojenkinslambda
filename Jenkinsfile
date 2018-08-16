@@ -96,10 +96,9 @@
 // }
 
 
-
-////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters
+//**** THIS WORKS *****
+////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters 
 node {
-  //properties([parameters([string(defaultValue: 'hello', description: '', name: 'myparam', trim: true), string(defaultValue: 'dev', description: '', name: 'deploy_env', trim: true)])])
   parameters {
         string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Targeted Environment to build')
     }
