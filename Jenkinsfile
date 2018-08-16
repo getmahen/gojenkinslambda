@@ -110,7 +110,7 @@ node {
             env.PATH="${GOPATH}/bin:$PATH"
             def packageName = "buildartifacts-${env.BUILD_ID}"
 
-            print "DEBUG: Build triggered for ${params.deployenv} environment..."
+            print "DEBUG: Build triggered for ${params.BUILD_ENV} environment..."
 
             stage('Checkout'){
                     echo 'Checking out SCM'
@@ -119,17 +119,10 @@ node {
 
             stage('Validate'){
                     echo 'Validating terraform...'
-                    //dir('infrastructure/terraform')
-                    // sh 'ls -latr'
-                    
-                    // sh 'ls -latr infrastructure/terraform'
-                    //sh 'cd infrastructure/terraform'
                     dir('infrastructure/terraform') {
                       sh 'terraform init -backend=false'
                       sh 'terraform validate'
                     }
-                    //sh "cd infrastructure/terraform; terraform validate"
-                    //sh 'infrastructure/terraform terraform validate'
             }
 
             stage('Install Dependencies'){
@@ -148,7 +141,7 @@ node {
 
             stage('Upload package to AWS S3...'){
               sh 'export AWS_DEFAULT_REGION=us-west-2'
-              sh "aws s3 cp ${packageName}.zip s3://testjenkinsartifacts/${params.deployenv}/${packageName}.zip"
+              sh "aws s3 cp ${packageName}.zip s3://testjenkinsartifacts/${params.BUILD_ENV}/${packageName}.zip"
             }
         }
     }
