@@ -99,7 +99,7 @@
 //**** THIS WORKS *****
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters 
 def getGitBranchName(scm) {
-      return scm.branches[0].name
+      return "hey"
 }
 
 node {
