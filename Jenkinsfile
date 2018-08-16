@@ -98,16 +98,16 @@
 
 //**** THIS WORKS *****
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters 
+def getGitBranchName() {
+      return scm.branches[0].name
+}
+
 node {
   parameters {
         string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Targeted Environment to build')
     }
 
     def root = tool name: 'Golang', type: 'go'
-
-    def getGitBranchName() {
-    return scm.branches[0].name
-}
 
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
