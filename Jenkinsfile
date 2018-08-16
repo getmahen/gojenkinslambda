@@ -125,8 +125,7 @@ node {
                     // sh 'ls -latr infrastructure/terraform'
                     //sh 'cd infrastructure/terraform'
                     dir('infrastructure/terraform') {
-                      sh 'pwd'
-                      sh 'ls -latr'
+                      sh 'terraform init'
                       sh 'terraform validate'
                     }
                     //sh "cd infrastructure/terraform; terraform validate"
