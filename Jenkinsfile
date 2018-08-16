@@ -112,7 +112,7 @@ node {
             print "DEBUG: Build triggered for ${params.BUILD_ENV} environment..."
 
             stage('Checkout'){
-                    echo 'Checking out SCM'
+                    echo "Checking out SCM from ${env.GIT_BRANCH}"
                     checkout scm
             }
 
