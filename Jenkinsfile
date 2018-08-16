@@ -119,7 +119,8 @@ node {
 
             stage('Validate'){
                     echo 'Validating terraform...'
-                    dir('infrastructure/terraform')
+                    //dir('infrastructure/terraform')
+                    sh 'cd `pwd`/infrastructure/terraform'
                     sh 'terraform validate'
             }
 
