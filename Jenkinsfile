@@ -121,7 +121,7 @@ node {
                     echo 'Validating terraform...'
                     //dir('infrastructure/terraform')
                     sh 'ls -latr'
-                    sh 'cd `infrastructure/terraform'
+                    sh 'cd infrastructure/terraform'
                     sh 'ls -latr'
                     sh 'terraform validate'
             }
