@@ -98,7 +98,7 @@
 
 //**** THIS WORKS *****
 ////VERSION THAT BUILDS THE ENTIRE BUILD ARTIFIACTS (Go Binary and Infrastructure dir) - ALSO Uses buildparameters 
-def getGitBranchName() {
+def getGitBranchName(scm) {
       return scm.branches[0].name
 }
 
@@ -113,7 +113,7 @@ node {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
             def packageName = "buildartifacts-${env.BUILD_ID}"
-            def branchName = getGitBranchName()
+            def branchName = getGitBranchName(scm)
 
             print "DEBUG: Build triggered for ${params.BUILD_ENV} environment..."
 
