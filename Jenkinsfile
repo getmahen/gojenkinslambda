@@ -104,15 +104,21 @@ node {
     }
 
     def root = tool name: 'Golang', type: 'go'
+
+    def getGitBranchName() {
+    return scm.branches[0].name
+}
+
     ws("${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/src/github.com/gojenkinslambda/gojenkinslambda") {
         withEnv(["GOROOT=${root}", "GOPATH=${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}/", "PATH+GO=${root}/bin"]) {
             env.PATH="${GOPATH}/bin:$PATH"
             def packageName = "buildartifacts-${env.BUILD_ID}"
+            def branchName = getGitBranchName()
 
             print "DEBUG: Build triggered for ${params.BUILD_ENV} environment..."
 
             stage('Checkout'){
-                    echo "Checking out SCM from ${env.GIT_BRANCH}"
+                    echo "Checking out SCM from ${branchName}"
                     checkout scm
             }
 
