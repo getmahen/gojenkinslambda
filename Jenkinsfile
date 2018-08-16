@@ -115,8 +115,13 @@ node {
             stage('Checkout'){
                     echo 'Checking out SCM'
                     checkout scm
-                    sh 'printenv'
-                }
+            }
+
+            stage('Validate'){
+                    echo 'Validating terraform...'
+                    dir('infrastructure/terraform')
+                    sh 'terraform validate'
+            }
 
             stage('Install Dependencies'){
               sh 'go version'
