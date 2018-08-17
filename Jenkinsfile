@@ -145,7 +145,7 @@ node {
             }
 
             stage('Upload package to AWS S3...'){
-              sh 'export AWS_DEFAULT_REGION=us-west-2'
+              //sh 'export AWS_DEFAULT_REGION=us-west-2'
               sh "aws s3 cp ${packageName}.zip s3://testjenkinsartifacts/${params.BUILD_ENV}/${packageName}.zip"
             }
         }
