@@ -1,0 +1,177 @@
+pipeline {
+  agent any
+
+  environment {
+            ARTIFACTFILENAME = "buildartifacts-${params.ARTIFACT_VERSION}"
+            ROLE_ARN = 'arn:aws:iam::674346455231:role/jenkins/jenkins_env'
+            DEPLOY_ENV = "${params.DEPLOY_ENV}"
+      }
+
+  // properties([
+  //       options([
+  //         string(name: 'tfplanExitCode', defaultValue: '')
+  //       ])
+  //     ])
+
+  stages {
+    stage('Retrieve Lambda package from S3 and unzip'){
+      
+      steps {
+        ///THIS WORKS!!!!!!
+        //  wrap([$class: 'BuildUser']) {
+        //   sh '''
+        //   #!/bin/bash
+        //   set +x
+        //   STS_REQ=\$(aws sts assume-role --role-arn arn:aws:iam::674346455231:role/jenkins/jenkins_env --role-session-name jenkins)
+
+        //   # from that call, parse out and assign the temporary credentials to the environmental vars read by the AWS SDK
+        //   export AWS_ACCESS_KEY_ID="$(echo \$STS_REQ | jq -r '.Credentials.AccessKeyId')"
+        //   export AWS_SECRET_ACCESS_KEY="$(echo \$STS_REQ | jq -r '.Credentials.SecretAccessKey')"
+        //   export AWS_SESSION_TOKEN="$(echo \$STS_REQ | jq -r '.Credentials.SessionToken')"
+        //   aws s3 cp s3://testjenkinsartifacts/dev/buildartifacts-161.zip buildartifacts-161.zip
+        //   ls -latr
+        //   '''
+        // }
+
+
+        wrap([$class: 'BuildUser']) {
+            
+          sh '''
+          #!/bin/bash
+          rm -rf buildartifacts*
+
+          set +x
+          STS_REQ=\$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins)
+
+          # from that call, parse out and assign the temporary credentials to the environmental vars read by the AWS SDK
+          export AWS_ACCESS_KEY_ID="$(echo \$STS_REQ | jq -r '.Credentials.AccessKeyId')"
+          export AWS_SECRET_ACCESS_KEY="$(echo \$STS_REQ | jq -r '.Credentials.SecretAccessKey')"
+          export AWS_SESSION_TOKEN="$(echo \$STS_REQ | jq -r '.Credentials.SessionToken')"
+          aws s3 cp s3://testjenkinsartifacts/${DEPLOY_ENV}/${ARTIFACTFILENAME}.zip ${ARTIFACTFILENAME}.zip
+          unzip ${ARTIFACTFILENAME}.zip
+          ls -latr
+          '''
+        }
+      }
+    }
+
+    stage('Validate package') {
+        steps {
+          wrap([$class: 'BuildUser']) {
+            sh '''
+            
+            if [ ! -d "${ARTIFACTFILENAME}/infrastructure/terraform" ]; then
+              exit 1
+            fi
+            '''
+          }
+        }
+        post {
+                success {
+                    //slackSend channel: '#infra_chatops', color: 'good', message: "Lambda successfully built in environment: `${params.DEPLOY_ENV}` : `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                    echo 'SUCCESS!!'
+                }
+                failure {
+                    //slackSend channel: '#infra_chatops', color: 'failed', message: "Lambda build in environment: `${params.DEPLOY_ENV}` FAILED. Job: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                    echo 'FAILED'
+                }
+                cleanup {
+                    echo 'Deleting Zip file..'
+                    sh 'rm ${ARTIFACTFILENAME}.zip'
+                }
+            }
+    }
+
+  
+    stage('Terraform Plan') {
+      
+        steps {
+          dir("${ARTIFACTFILENAME}/infrastructure/terraform") {
+            ansiColor('xterm'){
+
+              sh '''
+                set +x
+                STS_REQ=\$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins)
+
+                # from that call, parse out and assign the temporary credentials to the environmental vars read by the AWS SDK
+                export AWS_ACCESS_KEY_ID="$(echo \$STS_REQ | jq -r '.Credentials.AccessKeyId')"
+                export AWS_SECRET_ACCESS_KEY="$(echo \$STS_REQ | jq -r '.Credentials.SecretAccessKey')"
+                export AWS_SESSION_TOKEN="$(echo \$STS_REQ | jq -r '.Credentials.SessionToken')"
+              '''
+
+              sh "terraform --version"
+              
+              sh 'rm -rf ./.terraform/'
+              sh 'terraform init -backend-config=./backendConfigs/${DEPLOY_ENV}'
+
+              lock(resource: 'Terraform Plan', inversePrecedence: true) {
+                sh "set +e; terraform plan -out=tfplan.out -detailed-exitcode; echo \$? > status.tfplan"
+                sh 'ls -latr'
+
+                // params.tfplanExitCode = readFile('status.tfplan').trim()
+                
+                // echo "Terraform Plan Exit Code: '${params.tfplanExitCode}'"
+
+                // if (params.tfplanExitCode == "0") {
+                //   currentBuild.result = 'SUCCESS'
+                //   echo "Terraform plan success..."
+                // }
+                // if (params.tfplanExitCode == "1") {
+                //   //slackSend channel: '#ci', color: '#0080ff', message: "*Terraform Plan Failed*: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                //   currentBuild.result = 'FAILURE'
+                //   echo "Terraform plan failure..."
+                //   error('Terraform plan did not complete sucessfully.')
+                // }
+                // if (params.tfplanExitCode == "2") {
+                //   stash name: "plan", includes: "tfplan.out"
+                //   //slackSend channel: '#ci', color: 'good', message: "*Plan Awaiting Approval*: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                // }
+              }
+              // milestone()
+              // try {
+              //   milestone()
+              //   input message: 'Apply Terraform Plan?', ok: 'Apply'
+              //   milestone()
+              //   apply = true
+              // } catch (err) {
+              //   //slackSend channel: '#ci', color: 'warning', message: "*Plan Discarded*: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+              //   apply = false
+              //   currentBuild.result = 'UNSTABLE'
+              // }
+            }
+          }
+        }
+      }
+  }
+}
+
+    // }
+    // if (apply) {
+    //   milestone()
+    //   lock(resource: 'Terraform Apply', inversePrecedence: true) {
+    //     stage ('Terraform Apply') {
+    //       steps {
+    //         dir("infrastructure/terraform") {
+    //           unstash 'plan'
+    //           if (fileExists("status.tfapply")) {
+    //             sh "rm status.tfapply"
+    //           }
+    //           ansiColor('xterm'){
+    //             sh 'set +e; terraform apply tfplan.out; echo \$? > status.tfapply'
+    //           }
+    //           def tfapplyExitCode = readFile('status.tfapply').trim()
+    //           if (tfapplyExitCode == "0") {
+    //             slackSend channel: '#ci', color: 'good', message: "*Terraform Changes Applied*: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+    //           } else {
+    //             slackSend channel: '#ci', color: 'danger', message: "*Terraform Apply Failed*: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+    //             currentBuild.result = 'FAILURE'
+    //           }
+    //           milestone()
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+  //}
+//}
