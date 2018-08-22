@@ -16,3 +16,4 @@ terraform init -backend-config=${ENV_FILE}
 
 # attempt to set TF_VAR_environment to the appropriate env.   Will only work if script is sourced
 export TF_VAR_environment=$1
+export TF_VAR_terraform_user=${USER}
