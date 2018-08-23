@@ -5,8 +5,11 @@ name = "pypi"
 
 [packages]
 ansible-modules-hashivault = "*"
+boto = "*"
+boto3 = "*"
+botocore = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.6"
+python_version = "2.7"

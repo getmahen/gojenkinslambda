@@ -47,8 +47,31 @@ pipeline {
             if [ ! -d "${ARTIFACTFILENAME}/infrastructure/terraform" ]; then
               exit 1
             fi
+
+            if [ ! -d "${ARTIFACTFILENAME}/infrastructure/ansible" ]; then
+              exit 1
+            fi
+            
+            cd ${ARTIFACTFILENAME}/infrastructure/ansible;
+            ls -latr
+            
+            pip install --user pipenv
+            USER_BASE_PATH=$(python -m site --user-base)
+            export PATH=$PATH:$USER_BASE_PATH/bin
+            
+            pipenv install
+            pipenv shell
+
+            ansible-playbook vault-secrets.yml --syntax-check
             '''
           }
+          //INSTALLING PIP DEPENDENCIES EXPLICITLY
+          // cd ${ARTIFACTFILENAME}/infrastructure/ansible;
+          //   pip install --user ansible-modules-hashivault
+          //   pip install --user boto
+          //   pip install --user boto3
+          //   pip install --user botocore
+          //VAULT_CACERT=${HOME}/.credo/vault/vault.crt VAULT_ADDR=https://localhost:8243 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=$HOME/.ansible/envs/dev/ansible-vault-apps --extra-vars "env=dev"
         }
         post {
                 success {
