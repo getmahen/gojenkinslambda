@@ -65,7 +65,7 @@ pipeline {
             ansible-playbook vault-secrets.yml --syntax-check
             '''
           }
-          //INSTALLING PIP DEPENDENCIES EXPLICITLY
+          //INSTALLING PIP DEPENDENCIES EXPLICITLY AND THEN EXECUTING ANSIBLE PLAYBOOK
           // cd ${ARTIFACTFILENAME}/infrastructure/ansible;
           //   pip install --user ansible-modules-hashivault
           //   pip install --user boto
