@@ -72,6 +72,17 @@ pipeline {
           //   pip install --user boto3
           //   pip install --user botocore
           //VAULT_CACERT=${HOME}/.credo/vault/vault.crt VAULT_ADDR=https://localhost:8243 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=$HOME/.ansible/envs/dev/ansible-vault-apps --extra-vars "env=dev"
+
+
+          //USING VIRTUALENV
+          // pip install --user virtualenv
+          //   USER_BASE_PATH=$(python -m site --user-base)
+          //   export PATH=$PATH:$USER_BASE_PATH/bin
+          //   virtualenv -p /usr/bin/python2.7 venv
+          //   source venv/bin/activate
+          //   pip install boto boto3 botocore ansible-modules-hashivault
+          //   ls -latr ${HOME}/.ansible/envs/dev/ansible_vault/.vault_pass
+          //   VAULT_ADDR=https://vault.credodev.dev:443 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=${HOME}/.ansible/envs/dev/ansible_vault/.vault_pass --extra-vars "env=dev"
         }
         post {
                 success {
