@@ -54,6 +54,15 @@ packageall: build
 	zip -r $(PACKAGE_NAME).zip $(PACKAGE_NAME)
 	rm -rf $(PACKAGE_NAME)
 
+.PHONY: packagealltest
+packagealltest: build
+	mkdir -p $(PACKAGE_NAME);
+	cp -r infrastructure $(PACKAGE_NAME);
+	zip checkipaddress.zip checkipaddress/checkipaddress
+	cp checkipaddress.zip $(PACKAGE_NAME);
+	zip -r $(PACKAGE_NAME).zip $(PACKAGE_NAME)
+	rm -rf $(PACKAGE_NAME)
+
 .PHONY: upload
 upload: package
 	@echo "$(TS_COLOR)$(shell date "+%Y/%m/%d %H:%M:%S")$(NO_COLOR)$(OK_COLOR)==> Deploying Zip to s3$(NO_COLOR)"

@@ -11,6 +11,8 @@ pipeline {
             ROLE_ARN = 'arn:aws:iam::674346455231:role/jenkins/jenkins_env'
             DEPLOY_ENV = "${params.DEPLOY_ENV}"
             REGION_TO_DEPLOY = "${params.REGION}"
+            VAULT_TOKEN = "${params.VAULT_TOKEN}"
+            ANSIBLE_VAULT_ID = "${params.ANSIBLE_VAULT_ID}"
       }
       
   stages {
@@ -45,34 +47,62 @@ pipeline {
           wrap([$class: 'BuildUser']) {
             sh '''
             if [ ! -d "${ARTIFACTFILENAME}/infrastructure/terraform" ]; then
-              exit 1
-            fi
-
-            if [ ! -d "${ARTIFACTFILENAME}/infrastructure/ansible" ]; then
+              echo 'infrastructure/terraform does not exist'
               exit 1
             fi
             
-            cd ${ARTIFACTFILENAME}/infrastructure/ansible;
+            '''
             
-            set +x
-              STS_REQ=\$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins)
+            script {
+              ansiblePlaybookExists = fileExists("${ARTIFACTFILENAME}/infrastructure/ansible/vault-secrets.yml")
+              if(ansiblePlaybookExists) {
+                dir("${ARTIFACTFILENAME}/infrastructure/ansible") {
+                  
+                  withPythonEnv('/usr/bin/python2.7'){
+                    pysh 'ansible-playbook vault-secrets.yml --syntax-check'
+                  }
+                }
+              }
+            }
+            
+          }
+        }
+        post {
+                success {
+                    echo 'Package validation passed'
+                }
+                failure {
+                    //slackSend channel: '#ci', color: 'failed', message: "Lambda Package validation failed in environment: `${params.DEPLOY_ENV}` FAILED. Job: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                    echo 'Package validation failed'
+                }
+                cleanup {
+                    echo 'Deleting Zip file..'
+                    sh 'rm ${ARTIFACTFILENAME}.zip'
+                }
+            }
+        
+    }
     
+    stage ('Run Ansible changes') {
+      when {
+          expression { ansiblePlaybookExists == true }
+        }
+      steps {
+
+        dir("${ARTIFACTFILENAME}/infrastructure/ansible") {
+            
+            sh 'set +x; echo ${ANSIBLE_VAULT_ID} > vault_pass'
+            sh '''
+              set +x
+              STS_REQ=\$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins)
+
               # from that call, parse out and assign the temporary credentials to the environmental vars read by the AWS SDK
               export AWS_ACCESS_KEY_ID="$(echo \$STS_REQ | jq -r '.Credentials.AccessKeyId')"
               export AWS_SECRET_ACCESS_KEY="$(echo \$STS_REQ | jq -r '.Credentials.SecretAccessKey')"
               export AWS_SESSION_TOKEN="$(echo \$STS_REQ | jq -r '.Credentials.SessionToken')"
-            
-            pip install --user pipenv
-            USER_BASE_PATH=$(python -m site --user-base)
-            export PATH=$PATH:$USER_BASE_PATH/bin
-            
-            pipenv install
-            pipenv shell
-
-            ansible-playbook vault-secrets.yml --syntax-check
             '''
-          }
-          //INSTALLING PIP DEPENDENCIES EXPLICITLY AND THEN EXECUTING ANSIBLE PLAYBOOK
+            
+            //INSTALLING PIP DEPENDENCIES EXPLICITLY AND THEN EXECUTING ANSIBLE PLAYBOOK
           // cd ${ARTIFACTFILENAME}/infrastructure/ansible;
           //   pip install --user ansible-modules-hashivault
           //   pip install --user boto
@@ -107,31 +137,48 @@ pipeline {
           //       withPythonEnv('/usr/bin/python2.7'){
                     
           //           pysh 'pip install boto boto3 botocore ansible-modules-hashivault'
-                    
-                    
-          //           pysh 'set +x; VAULT_ADDR=https://vault.credodev.dev:443 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=./vault_pass --extra-vars "env=dev"'
-                    
-          //       }
-                
-          //       sh 'rm vault_pass'
-          //   }
+          //pysh 'set +x; VAULT_ADDR=https://vault.credodev.dev:443 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=./vault_pass --extra-vars "env=dev"'
+          //}
+          //}
           ///////////////////////////////////////////////////////////////////////////
 
-        }
-        post {
-                success {
-                    echo 'Package validation passed'
+                withPythonEnv('/usr/bin/python2.7'){
+                    
+                    pysh 'pip install boto boto3 botocore ansible-modules-hashivault'
+                    
+                    
+                    pysh 'set +x; VAULT_ADDR=https://vault.credodev.dev:443 VAULT_TOKEN=${VAULT_TOKEN} AWS_REGION=us-west-2 ansible-playbook vault-secrets.yml --vault-id=./vault_pass --extra-vars "env=dev"'
+                    
                 }
-                failure {
-                    slackSend channel: '#ci', color: 'failed', message: "Lambda Package validation failed in environment: `${params.DEPLOY_ENV}` FAILED. Job: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
-                    echo 'Package validation failed'
-                }
-                cleanup {
-                    echo 'Deleting Zip file..'
-                    sh 'rm ${ARTIFACTFILENAME}.zip'
-                }
+                
+                sh 'rm vault_pass'
             }
-        
+      }
+    }
+    
+    stage ('Upload Lambda package to S3') {
+      steps {
+        wrap([$class: 'BuildUser']) {
+            dir("${ARTIFACTFILENAME}") {
+              ansiColor('xterm'){
+
+                sh '''
+                #!/bin/bash
+
+                set +x
+                STS_REQ=\$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name jenkins)
+
+                # from that call, parse out and assign the temporary credentials to the environmental vars read by the AWS SDK
+                export AWS_ACCESS_KEY_ID="$(echo \$STS_REQ | jq -r '.Credentials.AccessKeyId')"
+                export AWS_SECRET_ACCESS_KEY="$(echo \$STS_REQ | jq -r '.Credentials.SecretAccessKey')"
+                export AWS_SESSION_TOKEN="$(echo \$STS_REQ | jq -r '.Credentials.SessionToken')"
+                aws s3 cp ./checkipaddress.zip s3://testjenkinsartifacts/checkipaddress.zip
+                
+                '''
+              }
+            }
+        }
+      }
     }
     
     stage('Terraform Plan') {
@@ -188,49 +235,49 @@ pipeline {
             }
           }
         }
-      }
+    }
       
-      stage ('Terraform Apply') {
-        when {
-          expression { tfPlanOutput == '2' }
-        }
+    stage ('Terraform Apply') {
+      when {
+        expression { tfPlanOutput == '2' }
+      }
 
-        steps{
-          wrap([$class: 'BuildUser']) {
-            dir("${ARTIFACTFILENAME}/infrastructure/terraform") {
-                
-              script {
-                if (fileExists("status.tfapply")) {
-                  echo 'Deleteing status.tfapply file...'
-                  sh "rm status.tfapply"
-                }
-              }
+      steps{
+        wrap([$class: 'BuildUser']) {
+          dir("${ARTIFACTFILENAME}/infrastructure/terraform") {
               
-              ansiColor('xterm'){
-                  sh 'set +e; echo Applying TF changes;'
-                  //sh 'set +e; terraform apply tfplan.out; echo \$? > status.tfapply'
+            script {
+              if (fileExists("status.tfapply")) {
+                echo 'Deleteing status.tfapply file...'
+                sh "rm status.tfapply"
               }
-                
             }
+            
+            ansiColor('xterm'){
+                sh 'set +e; echo Applying TF changes;'
+                sh 'set +e; terraform apply tfplan.out; echo \$? > status.tfapply'
+            }
+              
           }
         }
-        
-        post {
-                success {
-                    slackSend channel: '#ci', color: 'good', message: "Terraform changes applied successfully in environment: `${params.DEPLOY_ENV}` : `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
-                    echo 'Terraform apply SUCCESS!!'
-                }
-                failure {
-                    slackSend channel: '#ci', color: 'failed', message: "Terraform changes failed in environment: `${params.DEPLOY_ENV}` FAILED. Job: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
-                    echo 'Terraform apply FAILED'
-                }
-                cleanup {
-                    echo 'Deleting Terraform plan artifacts..'
-                    sh 'rm ./${ARTIFACTFILENAME}/infrastructure/terraform/status.tfplan'
-                }   
-        }
-        
       }
+      
+      post {
+              success {
+                  slackSend channel: '#ci', color: 'good', message: "Terraform changes applied successfully in environment: `${params.DEPLOY_ENV}` : `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                  echo 'Terraform apply SUCCESS!!'
+              }
+              failure {
+                  slackSend channel: '#ci', color: 'failed', message: "Terraform changes failed in environment: `${params.DEPLOY_ENV}` FAILED. Job: `${env.JOB_NAME}` (<${env.BUILD_URL}|#${env.BUILD_NUMBER}>)"
+                  echo 'Terraform apply FAILED'
+              }
+              cleanup {
+                  echo 'Deleting Terraform plan artifacts..'
+                  sh 'rm ./${ARTIFACTFILENAME}/infrastructure/terraform/status.tfplan'
+              }   
+      }
+      
+    }
       
   }
 }
